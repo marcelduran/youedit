@@ -1,0 +1,137 @@
+/* PLAY */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+#video {
+    width: 500px;
+    height: 311px;
+    background-color: #000;
+}
+
+.embed {
+    overflow: hidden;
+}
+
+.embed #video {
+    width: 100%;
+}
+
+/* *** EDIT *** */
+#edit-area {
+    width: 97%;
+}
+
+/* Mark input controls */
+.markinput {position: relative; height:3em;}
+.markinput .wcontrols {width:350px; left:40px; position:absolute; top:1em;}
+.markinput .controls {border:1px solid #000; position:relative; height:9px; border-width:0 0 3px 0;}
+.markinput .time {background-color:#fff;}
+.markinput .time input {width:3em; text-align: center;}
+.markinput .from {position:absolute;}
+.markinput .to {position:absolute; right:0;}
+.markinput .wadd {width:100%; float:left; text-align:center;}
+.markinput .from:after,
+.markinput .add:after {content:"<";}
+.markinput .to:before,
+.markinput .add:before {content:">";}
+.markinput .time label {position:absolute; top:-1.2em; font-family:sans-serif; font-size:73%; width:3em; text-align:center;}
+.markinput .time.add label {top:-1.1em;}
+
+#slider-to .yui3-slider-thumb {
+    margin-top: -26px !important;
+    top: 0 !important;
+}
+#slider-to .yui3-slider-rail,
+#slider-to .yui3-slider-rail-cap-left,
+#slider-to .yui3-slider-rail-cap-right {
+    background-image: none !important;
+}
+
+.edit-mode #edit {
+    display: none;
+}
+
+.tl-wrapper {
+    border: 0 solid #000;
+    border-width: 4px 0;
+    margin-top: -1.5em;
+}
+
+#timeline {
+    background-color: #000;
+    border: 0 dotted #fff;
+    border-width: 8px 0;
+    zoom: 1;
+}
+
+#timeline:after {display: block; clear: both; visibility: hidden; content: '.'; height: 0;}
+
+#timeline ul {
+    background-color: #000;
+    float: left;
+    margin: 0;
+    min-height: 108px;
+    padding: 0;
+    position: relative;
+    zoom: 1;
+}
+
+#timeline ul li {
+    background-color: #000;
+    cursor: move;
+    float: left;
+    list-style-type: none;
+    margin: 2px;
+    min-height: 98px;
+    min-width: 120px;
+    padding: 3px;
+    position: relative;
+    text-align: center;
+    zoom: 1;
+}
+
+#timeline img {
+    margin-bottom: -6px;
+}
+
+#timeline .time {
+    color: #e9941f;
+    font-size: 60%;
+    line-height: 10px;
+}
+
+.time .from {
+    float: left;
+}
+
+.time .to {
+    float: right;
+}
+
+.time .len:before,
+.time .from:before {
+    content: "\2190\A0" /* &larr; */
+}
+
+.time .len:after,
+.time .to:after {
+    content: "\A0\2192" /* &rarr; */
+}
+
+#timeline .del {
+    bottom: 0;
+    position: absolute;
+    right: 0;
+    visibility: hidden;
+}
+
+#timeline ul li:hover {
+    background-color: #444;
+}
+
+#timeline ul li:hover .del {
+    visibility: visible;
+}
