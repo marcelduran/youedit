@@ -21,7 +21,6 @@ YUI.add('youedit-play', function (Y) {
         reYTId = /(?:[&\?]v=|^)([\d\w\-_]+)(?:$|&)/, // get yt video id, e.g.: http://www.youtube.com/watch?v=3_1Y8UoLIu4 or simply id 3_1Y8UoLIu4
         reDigit = /^\d+$/, // 1 or more digit only, eg: 0, 1, 12
         reDebug = /(?:^|[\?&#])d(?:=)?([\d\w]*)/, // debug, eg: d, d=1, d=true, d=0 etc
-        reEmbed = /(?:^|[\?&#])e(?:=)?([\d\w]*)/, // embed, eg: e, e=1, e=true, e=0 etc
 
         // get next video
         nextVideo = function () {
@@ -114,7 +113,7 @@ YUI.add('youedit-play', function (Y) {
         // get parameters
         // e.g: http://localhost:8000/?v=sG_JUCZf3mg,5gLr5gUZ-Hg&s=284,50,45|100,60&f=289,56,53|105,65
         getParams = function () {
-            var debug, embed, qs,
+            var debug, qs,
                 params = {},
                 loc = win.location, 
                 s = loc.search,
@@ -131,12 +130,6 @@ YUI.add('youedit-play', function (Y) {
             debug = debug && debug[1];
             ye.debug = debug = (debug || debug === '');
             Y.log(['debug', debug]);
-
-            // check for embedded mode
-            embed = reEmbed.exec(s + h);
-            embed = embed && embed[1];
-            ye.embed = embed = (embed || embed === '');
-            Y.log(['embed', embed]);
 
             // parse querystring and hash, hash overrides
             Y.each(qs.concat(hash), function (entry) {
@@ -155,18 +148,18 @@ YUI.add('youedit-play', function (Y) {
                 //     f = finish point
                 params[key] = reMarks.test(key) ?
                     // start/finish marks
-                    map(val.split('|'), function (block) {
+                    map(val.split('!'), function (block) {
                         var last;
 
-                        return map(block.split(','), function (n) {
-                            n = (n === '-' ? last : parseInt(n, debug ? 10 : 36));
+                        return map(block.split('.'), function (n) {
+                            n = (n === '~' ? last : base64To10(n));
                             last = n;
 
                             return n;
                         });
                     }) :
                     // video ids
-                    map(val.split(','), function (v, i, a) {
+                    map(val.split('.'), function (v, i, a) {
                         // check video id shortcuts
                         return reDigit.test(v) ? a[v] : v;
                     });
@@ -206,7 +199,7 @@ YUI.add('youedit-play', function (Y) {
             }
         },
         
-        // init markup for playback (not embedded)
+        // init markup for playback
         initMarkup = function () {
             Y.one('body')
                 .prepend('<h1 id="title"></h1>')
@@ -214,13 +207,8 @@ YUI.add('youedit-play', function (Y) {
                 .append('<div id="ft">{{ version }}</div>');
         },
         
-        // init embedded mode
-        initEmbed = function () {
-            Y.one('body').addClass('embed');
-            Y.one('#video')
-                .setStyle('height', Y.DOM.winHeight() + 'px');
-        };
-
+        // convert base 10 numbers into base 64
+        // e.g.: 0 -> 0, 10 -> a, 61 -> Z, 62 -> -, 63 -> _ 
         base10To64 = function (n) {
             var r, c,
                 q = n,
@@ -241,6 +229,8 @@ YUI.add('youedit-play', function (Y) {
             return result;
         },
 
+        // convert base 64 numbers into base 10.
+        // e.g.: 0 -> 0, a -> 10, Z -> 61, - -> 62, _ -> 63 
         base64To10 = function (n) {
             var i, c, x,
                 result = 0,
@@ -295,7 +285,8 @@ YUI.add('youedit-play', function (Y) {
                     '?v=2&alt=json-in-script&callback={callback}', {
                         on: {
                             success: parseVideoInfo
-                            // TODO: parseVideoInfoError
+                            // TODO: failure: videoInfoError
+                            // TODO: timeout: videoInfoTimeout
                         },
                         args: [id, callback]
                     }
@@ -331,15 +322,11 @@ YUI.add('youedit-play', function (Y) {
 
                 Y.use('youedit-edit');
             });
-        } else {
-            initEmbed();
         }
 
         if (params && nextVideo()) {
             loadVideo();
             ye.getVideoInfo(params.v);
-        } else {
-            // load edit here
         }
     };
 
@@ -348,6 +335,7 @@ YUI.add('youedit-play', function (Y) {
     ye.parseVideoId = parseVideoId;
     ye.loadVideo = loadVideo;
     ye.getParams = getParams;
+    ye.base10To64 = base10To64;
 }, '0.0.1', {
     requires: ['swf', 'node', 'array-extras', 'jsonp']
 });

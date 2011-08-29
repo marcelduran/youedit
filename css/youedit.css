@@ -135,3 +135,7 @@ body {
 #timeline ul li:hover .del {
     visibility: visible;
 }
+
+.no-more #search-more-btn {
+    visibility: hidden;
+}

@@ -12,13 +12,19 @@ YUI.add('youedit-edit', function (Y) {
         arrayEach = YArray.each,
         video = ye.video,
         YGlobal = Y.Global,
+        body = Y.one('body'),
+
+        ENCODE = encodeURIComponent,
+        INT = function (s) {
+            return parseInt(s, 10);
+        },
 
         // elements
-        elVid, elFrom, elTo, elLen, elSec, elUrl, elTimeFrames, elControls,
-        fromSlider, toSlider,
+        elSearch, elFrom, elTo, elLen, elSec, elUrl, elTimeFrames, elControls,
+        fromSlider, toSlider, elResults, elSearchArea,
 
         // variables
-        edits, ctrlsW, ctrlsX,
+        edits, ctrlsW, ctrlsX, lastQuery, lastStart,
 
         // convert s in m:s
         convertTime = function (s) {
@@ -28,8 +34,8 @@ YUI.add('youedit-edit', function (Y) {
                 return s;
             }
 
-            h = parseInt(s / 3600, 10);
-            m = parseInt((s % 3600) / 60, 10);
+            h = INT(s / 3600);
+            m = INT((s % 3600) / 60);
             ss = s - (m * 60) - (h * 3600);
             hour = s >= 3600;
             min = s >= 60;
@@ -47,8 +53,8 @@ YUI.add('youedit-edit', function (Y) {
                 v = [],
                 S = [],
                 F = [],
-                debug = ye.debug,
-                radix = debug ? 10 : 36;
+                base10To64 = ye.base10To64,
+                debug = ye.debug;
 
             arrayEach(edits, function (edit, i) {
                 // hash of unique ids
@@ -70,21 +76,21 @@ YUI.add('youedit-edit', function (Y) {
                     var val = mark.f;
 
                     // ommit value for begin and end of video length
-                    s.push(!val ? null : val === lastF ? '-' :
-                        val.toString(radix));
+                    s.push(!val ? null : val === lastF ? '~' :
+                        base10To64(val));
                     lastF = val;
                     val = mark.t;
-                    f.push(val === Infinity ? null : val === lastT ? '-' :
-                        val.toString(radix));
+                    f.push(val === Infinity ? null : val === lastT ? '~' :
+                        base10To64(val));
                     lastT = val;
                 });
-                S.push(s.join());
-                F.push(f.join());
+                S.push(s.join('.'));
+                F.push(f.join('.'));
             });
 
             YGlobal.fire('ye:paramsBuilt',
                 (!v.length && !S.length && !F.length) ? '' :
-                'v=' + v.join() + '&s=' + S.join('|') + '&f=' + F.join('|') +
+                'v=' + v.join('.') + '&s=' + S.join('!') + '&f=' + F.join('!') +
                 (debug ? ('&d=' + debug) : '')
             );
         },
@@ -115,6 +121,18 @@ YUI.add('youedit-edit', function (Y) {
             Y.log(['buildMarks', edits]);
             return edits;
         },
+
+        // set location using either pushState when available or
+        // hash as a fallback
+        setLocation = function () {
+            return (win.history && win.history.replaceState) ?
+                function (params) {
+                    win.history.replaceState(null, null, '?' + params);
+                } :
+                function (params) {
+                    win.location.hash = params;
+                };
+        }(),
         
         // set preview url and location hash with editing params
         setUrlsParams = function (params) {
@@ -130,7 +148,7 @@ YUI.add('youedit-edit', function (Y) {
 
             elUrl.set('value', loc.protocol + '//' + loc.host +
                 loc.pathname + '?' + params);
-            loc.hash = params;
+            setLocation(params);
         },
 
         // add edit
@@ -171,9 +189,11 @@ YUI.add('youedit-edit', function (Y) {
         },
 
         // get new video
-        getVideo = function () {
-            var id = ye.parseVideoId(elVid.get('value'));
+        getVideo = function (ev) {
+            var id = ev.currentTarget.getData('info').id;
+
             Y.log('get video: ' + id);
+            ev.preventDefault();
 
             if (!id) {
                 return;
@@ -189,7 +209,7 @@ YUI.add('youedit-edit', function (Y) {
             var duration = info.duration;
             Y.log(info);
 
-            elVid.set('value', info.id);
+            //elVid.set('value', info.id);
             fromSlider.setValue(0);
             fromSlider.set('max', duration);
             toSlider.set('max', duration);
@@ -347,17 +367,123 @@ YUI.add('youedit-edit', function (Y) {
             node.remove();
             YGlobal.fire('ye:markDeleted', mark, edit);
         },
+
+        // show search results callback
+        showSearchResults = function (res, query, start) {
+            Y.log(['parseVideoInfo', res]);
+            var feed = res.feed,
+                entries = feed && feed.entry;
+
+            // clean on new searches
+            if (start === 1) {
+                elResults.all('li').remove(true);
+                elSearchArea.removeClass('no-more');
+            }
+
+            // paginator controls
+            lastQuery = query;
+            lastStart = start;
+
+            // check for more
+            if ((start + 10) > INT(feed.openSearch$totalResults.$t)) {
+                elSearchArea.addClass('no-more');
+            }
+
+            // get entries
+            arrayEach(entries, function (entry) {
+                var embeddable,
+                    media = entry.media$group,
+                    id = media.yt$videoid.$t,
+                    desc = media.media$description.$t,
+                    duration = INT(media.yt$duration.seconds),
+                    title = entry.title.$t,
+                    author = entry.author[0].name.$t,
+                    pub = new Date(entry.published.$t),
+                    views = INT(entry.yt$statistics.viewCount),
+                    accesses = entry.yt$accessControl;
+
+                // check if video is embeddable
+                YArray.some(accesses, function (access) {
+                    if (access.action === 'embed' &&
+                            access.permission === 'allowed') {
+                        embeddable = 1;
+                        return 1;
+                    }
+                });
+                if (!embeddable) {
+                    return;
+                }
+
+                // fill results
+                elResults.append(YNcreate('<li></li>')
+                    .append(YNcreate('<a href="#" class="s-link"></a>')
+                        .append(YNcreate('<img>')
+                            .set('src',
+                                'http://i.ytimg.com/vi/' + id + '/default.jpg')
+                        )
+                        .append(YNcreate('<span class="s-title"></span>')
+                            .setContent(title)
+                        )
+                        .append(YNcreate('<span class="s-views"></span>')
+                            .setContent(views)
+                        )
+                        .append(YNcreate('<span class="s-pub"></span>')
+                            .setContent(Y.toRelativeTime(pub))
+                        )
+                        .append(YNcreate('<span class="s-author"></span>')
+                            .setContent(author)
+                        )
+                        .append(YNcreate('<span class="s-duration"></span>')
+                            .setContent(convertTime(duration))
+                        )
+                        .setData('info', {
+                            id: id,
+                            title: title,
+                            duration: duration
+                        })
+                    )
+                );
+            });
+        },
+
+        // fetch videos from gdata
+        fetchVideos = function (query, start) {
+            start = start || 1;
+            Y.jsonp('http://gdata.youtube.com/feeds/api/videos?' +
+                'v=2&alt=json-in-script&callback={callback}&max-results=10&' + 
+                'q=' + ENCODE(query) + '&start-index=' + start, {
+                    on: {
+                        success: showSearchResults
+                        // TODO: failure: searchError
+                        // TODO: timeout: searchTimeout
+                    },
+                    args: [query, start]
+                }
+            );
+        },
+
+        // search video. event fired by search button
+        searchVideos = function () {
+            var query = elSearch.get('value');
+
+            if (query && query !== lastQuery) {
+                fetchVideos(query);
+            }
+        },
+
+        // get more videos from last search
+        moreVideos = function () {
+            fetchVideos(lastQuery, lastStart + 10);
+        },
         
         // init edit markup
         initMarkup = function () {
             var elEditArea, areaWidth;
 
             // set edit mode and insert edit area
-            Y.one('body').addClass('edit-mode');
+            body.addClass('edit-mode');
 
             // fill edit controls
-            elVid = YNcreate('<input type="text">')
-                .set('value', ye.id || '');
             elFrom = YNcreate('<input type="text">');
             elTo = YNcreate('<input type="text">');
             elLen = YNcreate('<input type="text">');
@@ -410,13 +536,6 @@ YUI.add('youedit-edit', function (Y) {
             elEditArea = YNcreate('<div></div>')
                 .set('id', 'edit-area')
                 .append(YNcreate('<div></div>')
-                    .append(elVid)
-                    .append(
-                        YNcreate('<button></button>')
-                            .set('id', 'get-video')
-                            .addClass('action')
-                            .setContent('get video')
-                    )
                     .append(elSec)
                 )
                 .append(
@@ -437,15 +556,44 @@ YUI.add('youedit-edit', function (Y) {
                 .append(
                     YNcreate('<button id="preview">preview</button>')
                 );
-            Y.one('#video').insert(elEditArea, 'after');
+
+            // fill Search area
+            elSearch = YNcreate('<input type="text">')
+                .set('value', ye.id || '');
+            elResults = YNcreate('<ul></ul>')
+                    .set('id', 'results');
+            elSearchArea = YNcreate('<div></div>')
+                .set('id', 'search-area')
+                .append(YNcreate('<div></div>')
+                    .set('id', 'search-box')
+                    .append(elSearch)
+                    .append(
+                        YNcreate('<button></button>')
+                            .set('id', 'search-btn')
+                            .setContent('Search')
+                    )
+                )
+                .append(elResults)
+                .append(YNcreate('<div></div>')
+                    .append(YNcreate('<button></button>')
+                        .set('id', 'search-more-btn')
+                        .setContent('more')
+                    )
+                );
+
+            Y.one('#video')
+                .insert(elEditArea, 'after')
+                .insert(elSearchArea, 'after');
             areaWidth = elEditArea.getComputedStyle('width');
 
             // events
-            elEditArea.delegate('click', addMark, '#add-edit');
-            elEditArea.delegate('click', getVideo, '#get-video');
-            elEditArea.delegate('click', setSeconds, '#seconds');
-            elEditArea.delegate('click', preview, '#preview');
-            elEditArea.delegate('click', deleteMark, '#timeline .del');
+            body.delegate('click', addMark, '#add-edit');
+            body.delegate('click', searchVideos, '#search-btn');
+            body.delegate('click', moreVideos, '#search-more-btn');
+            body.delegate('click', setSeconds, '#seconds');
+            body.delegate('click', preview, '#preview');
+            body.delegate('click', deleteMark, '#timeline .del');
+            body.delegate('click', getVideo, '.s-link');
 
             // sliders
             fromSlider = new Y.Slider({
@@ -500,6 +648,6 @@ YUI.add('youedit-edit', function (Y) {
     buildTimeline();
     ye.ddInit();
 }, '0.0.1', {
-    requires: ['youedit-play', 'event-delegate', 'slider', 'youedit-edit-dd'],
+    requires: ['youedit-play', 'event-delegate', 'slider', 'youedit-edit-dd', 'gallery-torelativetime'],
     use: ['youedit-edit-dd']
 });
