@@ -1,26 +1,32 @@
 /*globall YUI*/
 YUI.add('youedit-play', function (Y) {
-    var timer, begin, end,
-        video, url, params,
+    var
+        // variables
+        timer, begin, end, video, url, params, stateProxy,
 
+        // shorthands
         ye = Y.namespace('YouEdit'),
         win = Y.config.win,
         doc = Y.config.doc,
-        decode = win.decodeURIComponent,
         YArray = Y.Array,
         arrayEach = YArray.each,
         map = YArray.map,
+        YUIEnv = YUI.Env,
 
-        stateProxy = Y.guid(),
-        buffer = [],
-        bufSize = 4,
+        // minifier helpers
+        DECODE = win.decodeURIComponent,
+        INT = function (s) {
+            return parseInt(s, 10);
+        },
 
         // regular expressions
         reValid = /^(?:v|s|f)$/, // v = video id, s = start, f = finish
-        reMarks = /^(?:s|f)$/,
+        reMarks = /^(?:s|f)$/, // video marks: s = start, f= finish
         reYTId = /(?:[&\?]v=|^)([\d\w\-_]+)(?:$|&)/, // get yt video id, e.g.: http://www.youtube.com/watch?v=3_1Y8UoLIu4 or simply id 3_1Y8UoLIu4
         reDigit = /^\d+$/, // 1 or more digit only, eg: 0, 1, 12
-        reDebug = /(?:^|[\?&#])d(?:=)?([\d\w]*)/, // debug, eg: d, d=1, d=true, d=0 etc
+
+        // elements
+        body = Y.one('body'),
 
         // get next video
         nextVideo = function () {
@@ -74,7 +80,7 @@ YUI.add('youedit-play', function (Y) {
             Y.log('loadVideo: ' + id + ', begin: ' + begin);
 
             if (!video) {
-                video = ye.video = new Y.SWF('#video',
+                video = ye.video = new Y.SWF('#player',
                     'http://www.youtube.com/e/' + id +
                     '?controls=0&autoplay=1&enablejsapi=1&version=3&start=' + begin, {
                     fixedAttributes: {
@@ -93,8 +99,8 @@ YUI.add('youedit-play', function (Y) {
 
         // check time elapsed
         elapsed = function () {
-            var current = ye.current = parseInt(
-                video.callSWF('getCurrentTime'), 10);
+            var current = ye.current = INT(
+                video.callSWF('getCurrentTime'));
             if (current > end) {
                 begin = params.cs.shift();
                 end = params.cf.shift() || ye.duration;
@@ -113,7 +119,7 @@ YUI.add('youedit-play', function (Y) {
         // get parameters
         // e.g: http://localhost:8000/?v=sG_JUCZf3mg,5gLr5gUZ-Hg&s=284,50,45|100,60&f=289,56,53|105,65
         getParams = function () {
-            var debug, qs,
+            var qs,
                 params = {},
                 loc = win.location, 
                 s = loc.search,
@@ -125,17 +131,11 @@ YUI.add('youedit-play', function (Y) {
             idx = idx > -1 ? idx : s.length;
             qs = s.slice(1, idx).split('&');
 
-            // check for debuggin mode
-            debug = reDebug.exec(s + h);
-            debug = debug && debug[1];
-            ye.debug = debug = (debug || debug === '');
-            Y.log(['debug', debug]);
-
             // parse querystring and hash, hash overrides
             Y.each(qs.concat(hash), function (entry) {
                 var kv = entry.split('='),
-                    key = decode(kv[0]),
-                    val = decode(kv[1]);
+                    key = DECODE(kv[0]),
+                    val = DECODE(kv[1]);
 
                 // skip invalid parameters
                 if (!reValid.test(key)) {
@@ -187,8 +187,8 @@ YUI.add('youedit-play', function (Y) {
                 video = {
                     id: id,
                     title: video.title.$t,
-                    duration: parseInt(
-                        video.media$group.yt$duration.seconds, 10)
+                    duration: INT(
+                        video.media$group.yt$duration.seconds)
                 };
                 ye.videoInfo[id] = video;
 
@@ -198,13 +198,22 @@ YUI.add('youedit-play', function (Y) {
                 }
             }
         },
+
+        // init common markup
+        initCommon = function () {
+            Y.one('#vd')
+                .append('<h1 id="title"></h1>')
+                .append('<div id="player"></div>');
+        },
         
         // init markup for playback
         initMarkup = function () {
-            Y.one('body')
-                .prepend('<h1 id="title"></h1>')
-                .append('<button id="edit">edit</button>')
-                .append('<div id="ft">{{ version }}</div>');
+            body.addClass('play');
+            Y.one('#md')
+                .append('<button id="edit-btn">edit</button>');
+
+            // events delegation
+            body.delegate('click', setEditMode, '#edit-btn');
         },
         
         // convert base 10 numbers into base 64
@@ -221,7 +230,7 @@ YUI.add('youedit-play', function (Y) {
             
             while (q > 0) {
                 r = q % 64;
-                q = parseInt(q / 64);
+                q = INT(q / 64);
                 c = code(r + (r < 10 ? 48 : r < 36 ? 55 : r < 62 ? 61 : r < 63 ? -17 : 32));
                 result = c.toString() + result;
             }
@@ -244,6 +253,12 @@ YUI.add('youedit-play', function (Y) {
             }
             
             return result;
+        },
+        
+        // switch to edit mode
+        setEditMode = function () {
+            //body.addClass('edit');
+            Y.use('youedit-edit');
         };
 
     // global YT callback
@@ -254,12 +269,11 @@ YUI.add('youedit-play', function (Y) {
     };
 
     // publish video change
-    YUI.Env.YouEdit = YUI.Env.YouEdit || {};
-    YUI.Env.YouEdit[stateProxy] = function () {
+    YUIEnv.YouEdit = YUIEnv.YouEdit || {};
+    YUIEnv.YouEdit[stateProxy] = function () {
         var curl = video.callSWF('getVideoUrl');
 
         // video change
-        //Y.log(['curl: ' + curl, 'url: ' + url]);
         if (curl !== url) {
             url = curl;
             ye.id = parseVideoId(curl);
@@ -311,17 +325,14 @@ YUI.add('youedit-play', function (Y) {
 
     // initializer
     ye.init = function () {
+        stateProxy = Y.guid();
         params = getParams();
 
         if (!ye.embed) {
-            initMarkup();
-            // TODO: move to delegate if > 1 button
-            Y.one('#edit').on('click', function () {
-                // set edit mode
-                Y.one('body').addClass('edit-mode');
-
-                Y.use('youedit-edit');
-            });
+            initCommon();
+            if (!ye.edit) {
+                initMarkup();
+            }
         }
 
         if (params && nextVideo()) {

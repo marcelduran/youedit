@@ -1,6 +1,13 @@
 YUI.add('youedit-edit', function (Y) {
     Y.log('edit loaded');
     var 
+        // variables
+        edits, ctrlsW, ctrlsX, lastQuery, lastStart,
+
+        // element variables
+        elSearch, elFrom, elTo, elLen, elSec, elUrl, elTimeFrames, elControls,
+        fromSlider, toSlider, elResults, elSearchArea,
+
         // const
         SLIDER_THUMB = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAABICAMAAAAeVV+sAAADAFBMVEWMjY/4+PjQ0dLf4OHu7u/19fXj4+Tx8vLq6uvn5+i0tLTc3d77+/vZ2tvGx8jm5+ednZ39/f3W19e4urz///+trrC3uLu/wMH5+fnz8/Po6enCw8RycnIVFRUYGBijpafP0NHY2dqvsLHt7u7w8PHv8PC1t7r39/d4eHiur7Dc3N3Z2trZ2drf4ODT09Tt7e3d3d719vaUlJbk5OW0tbbc3d3x8fLr6+zX19fS09STlJbk5OTm5ufg4eH6+vqSk5X8/Px1dXX4+fnMzc7p6urV1teVlpjKy8zs7e0AAAD///9LS0tMTExNTU1OTk5PT09QUFBRUVFSUlJTU1NUVFRVVVVWVlZXV1dYWFhZWVlaWlpbW1tcXFxdXV1eXl5fX19gYGBhYWFiYmJjY2NkZGRlZWVmZmZnZ2doaGhpaWlqampra2tsbGxtbW1ubm5vb29wcHBxcXFycnJzc3N0dHR1dXV2dnZ3d3d4eHh5eXl6enp7e3t8fHx9fX1+fn5/f3+AgICBgYGCgoKDg4OEhISFhYWGhoaHh4eIiIiJiYmKioqLi4uMjIyNjY2Ojo6Pj4+QkJCRkZGSkpKTk5OUlJSVlZWWlpaXl5eYmJiZmZmampqbm5ucnJydnZ2enp6fn5+goKChoaGioqKjo6OkpKSlpaWmpqanp6eoqKipqamqqqqrq6usrKytra2urq6vr6+wsLCxsbGysrKzs7O0tLS1tbW2tra3t7e4uLi5ubm6urq7u7u8vLy9vb2+vr6/v7/AwMDBwcHCwsLDw8PExMTFxcXGxsbHx8fIyMjJycnKysrLy8vMzMzNzc3Ozs7Pz8/Q0NDR0dHS0tLT09PU1NTV1dXW1tbX19fY2NjZ2dna2trb29vc3Nzd3d3e3t7f39/g4ODh4eHi4uLj4+Pk5OTl5eXm5ubn5+fo6Ojp6enq6urr6+vs7Ozt7e3u7u7v7+/w8PDx8fHy8vLz8/P09PT19fX29vb39/f4+Pj5+fn6+vr7+/v8/Pz9/f3+/v7///8BB5tZAAAAS3RSTlP//////////////////////////////////////////////////////////////////////////////////////////////////wDLGfCsAAAAzElEQVQ4y93R6WLBQBSG4UMEE2uTTEISSxeqtta+64Iy7v+COjNHmN4B3n/P9/eD4//gJk0qmmpi2ZZ2MadtW2Zo4jyIHBNNnDRGxQCkHgmjI266jujY+4Jyw08vgW1XIPxajGHkQ1p/SWLxtnTxOYd1TOnxJI41u9I1T8Meq9KxZQrbbaQPgww22wv/etEw/5Pbb7lZzB0+cX+5fcDmb9Nb/fP+bLC8aoMxHOBMHOBCOYBCMYBKxgxupnYFLikscTcUf3MXgvJJ5aDwB9opBevJ8yMUAAAAAElFTkSuQmCC',
 
@@ -12,19 +19,15 @@ YUI.add('youedit-edit', function (Y) {
         arrayEach = YArray.each,
         video = ye.video,
         YGlobal = Y.Global,
-        body = Y.one('body'),
 
+        // minifier helpers
         ENCODE = encodeURIComponent,
         INT = function (s) {
             return parseInt(s, 10);
         },
 
         // elements
-        elSearch, elFrom, elTo, elLen, elSec, elUrl, elTimeFrames, elControls,
-        fromSlider, toSlider, elResults, elSearchArea,
-
-        // variables
-        edits, ctrlsW, ctrlsX, lastQuery, lastStart,
+        body = Y.one('body'),
 
         // convert s in m:s
         convertTime = function (s) {
@@ -53,8 +56,7 @@ YUI.add('youedit-edit', function (Y) {
                 v = [],
                 S = [],
                 F = [],
-                base10To64 = ye.base10To64,
-                debug = ye.debug;
+                base10To64 = ye.base10To64;
 
             arrayEach(edits, function (edit, i) {
                 // hash of unique ids
@@ -90,8 +92,7 @@ YUI.add('youedit-edit', function (Y) {
 
             YGlobal.fire('ye:paramsBuilt',
                 (!v.length && !S.length && !F.length) ? '' :
-                'v=' + v.join('.') + '&s=' + S.join('!') + '&f=' + F.join('!') +
-                (debug ? ('&d=' + debug) : '')
+                'v=' + v.join('.') + '&s=' + S.join('!') + '&f=' + F.join('!')
             );
         },
 
@@ -480,25 +481,23 @@ YUI.add('youedit-edit', function (Y) {
         initMarkup = function () {
             var elEditArea, areaWidth;
 
-            // set edit mode and insert edit area
-            body.addClass('edit-mode');
+            // set edit mode
+            body
+                .removeClass('play')
+                .addClass('edit');
 
             // fill edit controls
             elFrom = YNcreate('<input type="text">');
             elTo = YNcreate('<input type="text">');
             elLen = YNcreate('<input type="text">');
-            elSec = YNcreate('<input type="checkbox" unchecked>')
-                .set('id', 'seconds');
+            elSec = YNcreate('<input id="seconds" type="checkbox" unchecked>')
             elUrl = YNcreate('<input type="text">');
             elTimeFrames = YNcreate('<ul></ul>');
-            elControls = YNcreate('<div></div>')
-                .addClass('wcontrols')
+            elControls = YNcreate('<div class="wcontrols"></div>')
                 .append(
-                    YNcreate('<div></div>')
-                        .addClass('controls')
+                    YNcreate('<div class="controls"></div>')
                         .append(
-                            YNcreate('<div></div>')
-                                .addClass('time from')
+                            YNcreate('<div class="time from"></div>')
                                 .append(
                                     YNcreate('<label></label>')
                                         .setContent('from')
@@ -506,26 +505,22 @@ YUI.add('youedit-edit', function (Y) {
                                 .append(elFrom)
                         )
                         .append(
-                            YNcreate('<div></div>')
-                                .addClass('wadd')
+                            YNcreate('<div class="wadd"></div>')
                                 .append(
-                                    YNcreate('<span></span>')
-                                        .addClass('time add')
+                                    YNcreate('<span class="time add"></span>')
                                         .append(
                                             YNcreate('<label></label>')
                                                 .setContent('length')
                                         )
                                         .append(elLen)
                                         .append(
-                                            YNcreate('<button></button>')
-                                                .set('id', 'add-edit')
+                                            YNcreate('<button id="add-edit"></button>')
                                                 .setContent('add')
                                         )
                                 )
                         )
                         .append(
-                            YNcreate('<div></div>')
-                                .addClass('time to')
+                            YNcreate('<div class="time to"></div>')
                                 .append(
                                     YNcreate('<label></label>')
                                         .setContent('to')
@@ -533,8 +528,7 @@ YUI.add('youedit-edit', function (Y) {
                                 .append(elTo)
                         )
                 );
-            elEditArea = YNcreate('<div></div>')
-                .set('id', 'edit-area')
+            elEditArea = YNcreate('<div id="edit-area"></div>')
                 .append(YNcreate('<div></div>')
                     .append(elSec)
                 )
@@ -544,12 +538,17 @@ YUI.add('youedit-edit', function (Y) {
                         .append(elControls)
                 )
                 .append(
-                    YNcreate('<div id="slider-from"></div><div id="slider-to"></div>')
+                    YNcreate('<div id="slider-from"></div>' +
+                        '<div id="slider-to"></div>')
                 )
                 .append(
-                    YNcreate('<div class="tl-wrapper"></div>')
+                    YNcreate('<div class="scroller">')
                         .append(
-                            YNcreate('<div id="timeline"></div>').append(elTimeFrames)
+                            YNcreate('<div class="tl-wrapper"></div>')
+                                .append(
+                                    YNcreate('<div id="timeline"></div>')
+                                        .append(elTimeFrames)
+                                )
                         )
                 )
                 .append(elUrl)
@@ -557,39 +556,35 @@ YUI.add('youedit-edit', function (Y) {
                     YNcreate('<button id="preview">preview</button>')
                 );
 
-            // fill Search area
-            elSearch = YNcreate('<input type="text">')
-                .set('value', ye.id || '');
-            elResults = YNcreate('<ul></ul>')
-                    .set('id', 'results');
-            elSearchArea = YNcreate('<div></div>')
-                .set('id', 'search-area')
-                .append(YNcreate('<div></div>')
-                    .set('id', 'search-box')
+            // fill search area
+            elSearch = YNcreate('<input type="text">');
+            elResults = YNcreate('<ul id="results"></ul>');
+            elSearchArea = YNcreate('<div id="search-area" class="no-more"></div>')
+                .append(YNcreate('<div id="search-box"></div>')
                     .append(elSearch)
                     .append(
-                        YNcreate('<button></button>')
-                            .set('id', 'search-btn')
+                        YNcreate('<button id="search-btn"></button>')
                             .setContent('Search')
                     )
                 )
                 .append(elResults)
                 .append(YNcreate('<div></div>')
-                    .append(YNcreate('<button></button>')
-                        .set('id', 'search-more-btn')
+                    .append(YNcreate('<button id="more-btn"></button>')
                         .setContent('more')
                     )
                 );
 
-            Y.one('#video')
-                .insert(elEditArea, 'after')
-                .insert(elSearchArea, 'after');
+            // fill layout 
+            Y.one('#st')
+                .append(elEditArea);
+            Y.one('#sb')
+                .append(elSearchArea, 'after');
             areaWidth = elEditArea.getComputedStyle('width');
 
-            // events
+            // events delegation
             body.delegate('click', addMark, '#add-edit');
             body.delegate('click', searchVideos, '#search-btn');
-            body.delegate('click', moreVideos, '#search-more-btn');
+            body.delegate('click', moreVideos, '#more-btn');
             body.delegate('click', setSeconds, '#seconds');
             body.delegate('click', preview, '#preview');
             body.delegate('click', deleteMark, '#timeline .del');
@@ -641,6 +636,7 @@ YUI.add('youedit-edit', function (Y) {
     multiscriber('ye:editsUpdated', [buildParams, function(e){Y.log(['editsUpdated', e]);}]);
 
     // initialize edit mode
+    ye.edit = 1;
     ye.cancelPlayTimer();
     edits = buildMarks();
     initMarkup();

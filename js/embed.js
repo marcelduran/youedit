@@ -3,7 +3,7 @@ YUI.add('youedit-embed', function (Y) {
     var ye = Y.namespace('YouEdit'),
         init = function () {
             Y.one('body').addClass('embed');
-            Y.one('#video')
+            Y.one('#player')
                 .setStyle('height', Y.DOM.winHeight() + 'px');
         };
 
