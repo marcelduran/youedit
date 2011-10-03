@@ -2,7 +2,10 @@
 YUI.add('youedit-play', function (Y) {
     var
         // variables
-        timer, begin, end, video, url, params, stateProxy,
+        timer, begin, end, video, url, params,
+        
+        // init vars
+        stateProxy = Y.guid(),
 
         // shorthands
         ye = Y.namespace('YouEdit'),
@@ -20,8 +23,8 @@ YUI.add('youedit-play', function (Y) {
         },
 
         // regular expressions
-        reValid = /^(?:v|s|f)$/, // v = video id, s = start, f = finish
-        reMarks = /^(?:s|f)$/, // video marks: s = start, f= finish
+        reValid = /^(?:v|i|o)$/, // v = video id, i = IN, o = OUT
+        rePos = /^(?:i|o)$/, // clips position: i = IN, o = OUT
         reYTId = /(?:[&\?]v=|^)([\d\w\-_]+)(?:$|&)/, // get yt video id, e.g.: http://www.youtube.com/watch?v=3_1Y8UoLIu4 or simply id 3_1Y8UoLIu4
         reDigit = /^\d+$/, // 1 or more digit only, eg: 0, 1, 12
 
@@ -36,13 +39,12 @@ YUI.add('youedit-play', function (Y) {
                 return;
             }
 
-            params.cs = params.s.shift() || [];
-            params.cf = params.f.shift() || [];
-            begin = params.cs.shift() || 0;
-            end = params.cf.shift() || ye.duration;
+            params.ci = params.i.shift() || [];
+            params.co = params.o.shift() || [];
+            begin = params.ci.shift() || 0;
+            end = params.co.shift() || ye.duration;
 
-            Y.log('loaded: ' + ye.id);
-            Y.log(['begin: ' + begin, 'end: ' + end]);
+            Y.log(['loaded: ' + ye.id, 'begin: ' + begin, 'end: ' + end]);
             return true;
         },
     
@@ -82,7 +84,7 @@ YUI.add('youedit-play', function (Y) {
             if (!video) {
                 video = ye.video = new Y.SWF('#player',
                     'http://www.youtube.com/e/' + id +
-                    '?controls=0&autoplay=1&enablejsapi=1&version=3&start=' + begin, {
+                    '?modestbranding=1&iv_load_policy=3&showinfo=0&rel=0&controls=0&autoplay=1&enablejsapi=1&version=3&start=' + begin, {
                     fixedAttributes: {
                         bgColor: '#000',
                         allowFullScreen: 'true',
@@ -102,9 +104,9 @@ YUI.add('youedit-play', function (Y) {
             var current = ye.current = INT(
                 video.callSWF('getCurrentTime'));
             if (current > end) {
-                begin = params.cs.shift();
-                end = params.cf.shift() || ye.duration;
-                Y.log([begin, end]);
+                begin = params.ci.shift();
+                end = params.co.shift() || ye.duration;
+                Y.log(['next clip:', begin, end]);
                 if (begin && end && begin < end) {
                     video.callSWF('seekTo', [begin, true]);
                 } else if (nextVideo()) {
@@ -116,8 +118,10 @@ YUI.add('youedit-play', function (Y) {
             }
         },
 
-        // get parameters
-        // e.g: http://localhost:8000/?v=sG_JUCZf3mg,5gLr5gUZ-Hg&s=284,50,45|100,60&f=289,56,53|105,65
+        /**
+         * Get edit paramaters from querystring.
+         * e.g: http://localhost:8000/?v=sG_JUCZf3mg,5gLr5gUZ-Hg&s=284,50,45|100,60&f=289,56,53|105,65
+         */
         getParams = function () {
             var qs,
                 params = {},
@@ -144,10 +148,10 @@ YUI.add('youedit-play', function (Y) {
 
                 // get parameters:
                 //     v = video id
-                //     s = start point
-                //     f = finish point
-                params[key] = reMarks.test(key) ?
-                    // start/finish marks
+                //     i = clip IN position
+                //     o = clip OUT position
+                params[key] = rePos.test(key) ?
+                    // in/out positions
                     map(val.split('!'), function (block) {
                         var last;
 
@@ -166,6 +170,9 @@ YUI.add('youedit-play', function (Y) {
             });
 
             Y.log(['getParams', params]);
+            Y.log(['getParams v', JSON.stringify(params.v, null)]);
+            Y.log(['getParams i', JSON.stringify(params.i, null)]);
+            Y.log(['getParams o', JSON.stringify(params.o, null)]);
             return params.v && params; 
         },
 
@@ -262,7 +269,8 @@ YUI.add('youedit-play', function (Y) {
         };
 
     // global YT callback
-    win.onYouTubePlayerReady = function () {
+    win.onYouTubePlayerReady = function (playerId) {
+        Y.log(['youtube player ready', playerId]);
         video.callSWF('addEventListener', ['onStateChange', 'YUI.Env.YouEdit.' +
             stateProxy]);
         timer = Y.later(500, this, elapsed, null, true);
@@ -270,7 +278,8 @@ YUI.add('youedit-play', function (Y) {
 
     // publish video change
     YUIEnv.YouEdit = YUIEnv.YouEdit || {};
-    YUIEnv.YouEdit[stateProxy] = function () {
+    YUIEnv.YouEdit[stateProxy] = function (state) {
+        //Y.log(['youtube player state change', state]);
         var curl = video.callSWF('getVideoUrl');
 
         // video change
@@ -325,7 +334,6 @@ YUI.add('youedit-play', function (Y) {
 
     // initializer
     ye.init = function () {
-        stateProxy = Y.guid();
         params = getParams();
 
         if (!ye.embed) {

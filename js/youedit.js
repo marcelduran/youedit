@@ -13,8 +13,10 @@ YUI_config = {
                 },
                 'youedit-edit': {
                     path: 'edit.js',
-                    requires: ['youedit-play', 'event-delegate', 'slider',
-                        'gallery-torelativetime', 'youedit-edit-dd']
+                    requires: ['youedit-play', 'event-delegate',
+                        'gallery-torelativetime', 'youedit-edit-dd',
+                        'gallery-dualthumbslider', 'autocomplete',
+                        'autocomplete-highlighters']
                 },
                 'youedit-edit-dd': {
                     path: 'edit-dd.js',
@@ -24,6 +26,11 @@ YUI_config = {
                 'youedit-embed': {
                     path: 'embed.js',
                     requires: ['youedit-play']
+                },
+                'gallery-dualthumbslider': {
+                    path: 'gallery-dualthumbslider.js',
+                    requires: ['dd-constrain', 'node', 'gallery-center',
+                        'gallery-simpleslider']
                 }
             }
         }

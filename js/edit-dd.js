@@ -1,39 +1,70 @@
 YUI.add('youedit-edit-dd', function (Y) {
-    var goingUp, lastX,
+    var goingUp, lastX, dts,
+    
+        // elements
+        elFrames, elClipHolder,
 
         // shorthands
         ye = Y.namespace('YouEdit'),
         YDD = Y.DD,
         YDDM = Y.DD.DDM,
         YPlugin = Y.Plugin,
-        YGlobal = Y.Global;
+        YGlobal = Y.Global,
+
+        // make frame (li) draggable
+        ddFrame = function (node, region) {
+            var dd = new YDD.Drag({
+                node: node,
+                target: {
+                    padding: '0 0 0 20'
+                }
+            }).plug(YPlugin.DDProxy, {
+                moveOnEnd: false
+            }).plug(YPlugin.DDConstrained, {
+                constrain2node: region || '#timeline'
+            }).plug(YPlugin.DDNodeScroll, {
+                node: '#timeline ul'
+            });
+        };
 
     Y.log('edit dd loaded');
 
     YDDM.on('drop:over', function (e) {
-        // get a reference to our drag and drop nodes
-        var drag = e.drag.get('node'),
-            drop = e.drop.get('node');
+        var drop, tag,
+            drag = e.drag.get('node');
+
+        // only for dd frames
+        if (!drag.hasClass('dd')) {
+            return;
+        }
         
-        // are we dropping on a li node?
-        if (drop.get('tagName').toLowerCase() === 'li') {
-            // are we not going up?
+        drop = e.drop.get('node');
+        //Y.log(['drop:over', e]);
+        tag = drop.get('tagName').toLowerCase();
+        if (tag === 'li') {
             if (!goingUp) {
                 drop = drop.get('nextSibling');
             }
-            // add the node to this list
-            e.drop.get('node').get('parentNode').insertBefore(drag, drop);
-            // set the new parentScroll on the nodescroll plugin
-            e.drag.nodescroll.set('parentScroll', e.drop.get('node').get('parentNode'));            
-            // resize this nodes shim, so we can drop on it later.
+            elFrames.insertBefore(drag, drop);
             e.drop.sizeShim();
+        } else if (tag === 'ul' && drag.get('parentNode') === elClipHolder) {
+            elFrames.append(drag);
         }
     });
 
     // listen for all drag:drag events
     YDDM.on('drag:drag', function (e) {
-        var x = e.target.lastXY[0]; // get the last x point
+        var x,
+            drag = e.target;
 
+        // only for dd frames
+        if (!drag.get('node').hasClass('dd')) {
+            return;
+        }
+        //Y.log(['drag:drag', e]);
+        
+        // get the last x point
+        x = drag.lastXY[0];
         // is it greater than the lastX var?
         goingUp = x < lastX;
         lastX = x;
@@ -43,64 +74,116 @@ YUI.add('youedit-edit-dd', function (Y) {
     // listen for all drag:start events
     YDDM.on('drag:start', function (e) {
         //Get our drag object
-        var drag = e.target;
+        var dragNode,
+            drag = e.target,
+            node = drag.get('node');
+
+        // only for dd frames
+        if (!node.hasClass('dd')) {
+            return;
+        }
+        Y.log(['drag:start', e, drag.startXY[0], drag.nodeXY[0]]);
+
+        dragNode = drag.get('dragNode');
+        // duration bar
+        if (node.get('id') === 'dts-clip') {
+            node
+                .setData('original', node.getContent())
+                .addClass('clip-drag frame');
+            ye.createFrame(ye.getCurrentClip(), node);
+            dragNode
+                .setContent(node.getContent())
+                .addClass('clip-drag frame');
+            return;
+        }
+
         // set some styles here
-        drag.get('node').setStyle('opacity', '.25');
-        drag.get('dragNode').set('innerHTML', drag.get('node').get('innerHTML'));
-        drag.get('dragNode').setStyles({
-            opacity: '.5',
-            borderColor: drag.get('node').getStyle('borderColor'),
-            backgroundColor: drag.get('node').getStyle('backgroundColor')
-        });
+        dragNode
+            .setContent(node.getContent())
+            .setStyle('opacity', '.7');
+        node.setStyle('opacity', '.25');
     });
 
     // listen for a drag:end events
     YDDM.on('drag:end', function (e) {
+        var drag = e.target.get('node');
+
+        // only for dd frames
+        if (!drag.hasClass('dd')) {
+            return;
+        }
+        Y.log(['drag:end', e, drag]);
+
+        if (drag.get('id') === 'dts-clip') {
+            Y.log('clip drag end');
+            drag
+                .setContent(drag.getData('original'))
+                .removeClass('clip-drag').removeClass('frame');
+            elClipHolder.append(drag);
+
+            return;
+        }
         // put our styles back
-        e.target.get('node').setStyles({
+        drag.setStyles({
             visibility: '',
             opacity: '1'
         });
-        YGlobal.fire('ye:timelineUpdate');
+    });
+
+    YDDM.on('drag:dropmiss', function (e) {
+        Y.log(['drag:dropmiss', e]);
     });
 
     // listen for all drag:drophit events
     YDDM.on('drag:drophit', function (e) {
-        var drop = e.drop.get('node'),
+        var drop, cloneNode,
             drag = e.drag.get('node');
 
-        //if we are not on an li, we must have been dropped on a ul
-        if (drop.get('tagName').toLowerCase() !== 'li') {
+        // only for dd frames
+        if (!drag.hasClass('dd')) {
+            return;
+        }
+
+        drop = e.drop.get('node');
+        Y.log(['drag:drophit', e]);
+
+        // frame dropped from where?
+        if (drag.get('id') === 'dts-clip') {
+            // from duratino bar
+            Y.log('clip dropped');
+            cloneNode = drag.cloneNode(true);
+            cloneNode
+                .set('id', Y.guid())
+                .removeClass('yui3-dd-drop-over')
+                .removeClass('yui3-dd-dragging')
+                .removeClass('clip-drag');
+            ddFrame(cloneNode);
+            elFrames.insertBefore(cloneNode, drag);
+        } else if (drop.get('tagName').toLowerCase() !== 'li') {
+            // from timeline
             if (!drop.contains(drag)) {
                 drop.appendChild(drag);
                 // set the new parentScroll on the nodescroll plugin
                 e.drag.nodescroll.set('parentScroll', e.drop.get('node'));                
             }
         }
+        YGlobal.fire('ye:frameDropped', cloneNode || drag);
     });
-    
-    // make frame (li) draggable
-    ye.ddFrame = function (li) {
-        var dd = new YDD.Drag({
-            node: li,
-            target: {
-                padding: '0 0 0 20'
-            }
-        }).plug(YPlugin.DDProxy, {
-            moveOnEnd: false
-        }).plug(YPlugin.DDConstrained, {
-            constrain2node: '#timeline'
-        }).plug(YPlugin.DDNodeScroll, {
-            node: li.get('parentNode')
-        });
-    };
 
     // initialize drag and drop timeline
     ye.ddInit = function () {
         var tar = new YDD.Drop({
-            node: Y.one('#timeline ul')
-        });
+                node: Y.one('#timeline ul')
+            });
+        
+        elFrames = Y.one('#frames');
+        elClipHolder = Y.one('#clip-holder');
+        dts = ye.dts;
     };
+
+    // expose api
+    ye.ddFrame = ddFrame;
 }, '0.0.1', {
-    requires: ['dd-constrain', 'dd-proxy', 'dd-drop', 'dd-scroll']
+    requires: ['dd-constrain', 'dd-proxy', 'dd-drop',
+        'dd-scroll']
 });
