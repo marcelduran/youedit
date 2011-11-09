@@ -1,10 +1,15 @@
 /*globall YUI*/
 YUI.add('youedit-play', function (Y) {
+    Y.log('play loaded');
     var
         // variables
         timer, begin, end, video, url, params,
+
+        // uninitialized elements
+        elTitle,
         
         // init vars
+        videoInfo = {},
         stateProxy = Y.guid(),
 
         // shorthands
@@ -12,9 +17,11 @@ YUI.add('youedit-play', function (Y) {
         win = Y.config.win,
         doc = Y.config.doc,
         YArray = Y.Array,
+        isFunction = Y.Lang.isFunction,
         arrayEach = YArray.each,
         map = YArray.map,
         YUIEnv = YUI.Env,
+        YNcreate = Y.Node.create,
 
         // minifier helpers
         DECODE = win.decodeURIComponent,
@@ -42,7 +49,7 @@ YUI.add('youedit-play', function (Y) {
             params.ci = params.i.shift() || [];
             params.co = params.o.shift() || [];
             begin = params.ci.shift() || 0;
-            end = params.co.shift() || ye.duration;
+            end = params.co.shift() || Infinity;
 
             Y.log(['loaded: ' + ye.id, 'begin: ' + begin, 'end: ' + end]);
             return true;
@@ -54,16 +61,24 @@ YUI.add('youedit-play', function (Y) {
                 return;
             }
 
-            title = Y.Node.create('<textarea></textarea>')
+            title = YNcreate('<textarea></textarea>')
                 .setContent(title)
                 .get('value');
-            Y.one('#title').setContent(title);
+            elTitle.setContent(title);
             doc.title = 'YouEdit - ' + title;
         },
 
-        // set current video title
-        setCurrentVideoInfo = function () {
-            var video = ye.videoInfo[ye.id];
+        /**
+         * Set current video title.
+         * @param {Object} info Optional video information from search result.
+         */
+        setCurrentVideoInfo = function (info) {
+            var id = ye.id,
+                video = videoInfo[id];
+
+            if (!video && info) {
+                video = videoInfo[id] = info;
+            }
 
             if (video) {
                 if (!video.pending) {
@@ -74,13 +89,20 @@ YUI.add('youedit-play', function (Y) {
             }
         },
 
-        // load video
-        loadVideo = function () {
+        /**
+         * Load video.
+         * @param {Object} info Optional video information from search result.
+         */
+        loadVideo = function (info) {
             var id = ye.id;
 
             begin = begin || 0;
             Y.log('loadVideo: ' + id + ', begin: ' + begin);
 
+            // set current video info
+            setCurrentVideoInfo(info);
+
+            // create video or use the existing one
             if (!video) {
                 video = ye.video = new Y.SWF('#player',
                     'http://www.youtube.com/e/' + id +
@@ -94,16 +116,13 @@ YUI.add('youedit-play', function (Y) {
             } else {
                 video.callSWF('loadVideoById', [id, begin]);
             }
-
-            // set current video info
-            setCurrentVideoInfo();
         },
 
         // check time elapsed
         elapsed = function () {
             var current = ye.current = INT(
                 video.callSWF('getCurrentTime'));
-            if (current > end) {
+            if (current >= end) {
                 begin = params.ci.shift();
                 end = params.co.shift() || ye.duration;
                 Y.log(['next clip:', begin, end]);
@@ -197,9 +216,9 @@ YUI.add('youedit-play', function (Y) {
                     duration: INT(
                         video.media$group.yt$duration.seconds)
                 };
-                ye.videoInfo[id] = video;
+                videoInfo[id] = video;
 
-                Y.log(['videoInfo', ye.videoInfo]);
+                Y.log(['videoInfo', videoInfo]);
                 if (typeof callback === 'function') {
                     return callback(video);
                 }
@@ -208,8 +227,9 @@ YUI.add('youedit-play', function (Y) {
 
         // init common markup
         initCommon = function () {
+            elTitle = YNcreate('<h1 id="title"></h1>');
             Y.one('#vd')
-                .append('<h1 id="title"></h1>')
+                .append(elTitle)
                 .append('<div id="player"></div>');
         },
         
@@ -287,7 +307,12 @@ YUI.add('youedit-play', function (Y) {
             url = curl;
             ye.id = parseVideoId(curl);
             Y.log('video id: ' + ye.id);
-            ye.duration = video.callSWF('getDuration');
+            duration = video.callSWF('getDuration');
+            ye.duration = duration;
+            // set end to duration if currently infinity
+            if (end === Infinity) {
+                end = duration;
+            }
             Y.log('duration: ' + ye.duration);
             Y.Global.fire('ye:videoChange', {
                 id: ye.id,
@@ -301,9 +326,9 @@ YUI.add('youedit-play', function (Y) {
         // get only video info for new videos
         ids = Y.Array(ids);
         arrayEach(ids, function (id) {
-            var videoInfo = ye.videoInfo[id];
-            if (!videoInfo) {
-                ye.videoInfo[id] = {pending: 1};
+            var video = videoInfo[id];
+            if (!video) {
+                videoInfo[id] = {pending: 1};
                 Y.jsonp('http://gdata.youtube.com/feeds/api/videos/' + id +
                     '?v=2&alt=json-in-script&callback={callback}', {
                         on: {
@@ -314,8 +339,8 @@ YUI.add('youedit-play', function (Y) {
                         args: [id, callback]
                     }
                 );
-            } else if (typeof callback === 'function') {
-                callback(videoInfo);
+            } else if (isFunction(callback)) {
+                callback(video);
             }
         }); 
     };
@@ -350,7 +375,7 @@ YUI.add('youedit-play', function (Y) {
     };
 
     // expose api
-    ye.videoInfo = {};
+    ye.videoInfo = videoInfo;
     ye.parseVideoId = parseVideoId;
     ye.loadVideo = loadVideo;
     ye.getParams = getParams;

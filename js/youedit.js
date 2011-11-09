@@ -14,14 +14,19 @@ YUI_config = {
                 'youedit-edit': {
                     path: 'edit.js',
                     requires: ['youedit-play', 'event-delegate',
-                        'gallery-torelativetime', 'youedit-edit-dd',
-                        'gallery-dualthumbslider', 'autocomplete',
-                        'autocomplete-highlighters']
+                        'youedit-edit-search', 'youedit-edit-dd',
+                        'gallery-dualthumbslider']
                 },
                 'youedit-edit-dd': {
                     path: 'edit-dd.js',
                     requires: ['dd-constrain', 'dd-proxy', 'dd-drop',
                         'dd-scroll']
+                },
+                'youedit-edit-search': {
+                    path: 'edit-search.js',
+                    requires: ['gallery-torelativetime', 'autocomplete',
+                        'autocomplete-highlighters', 'datatype-number-format',
+                        'escape']
                 },
                 'youedit-embed': {
                     path: 'embed.js',

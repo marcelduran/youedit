@@ -315,15 +315,88 @@ a {
 .frame:hover .del {
     visibility: visible;
 }
+
+#gallery li {
+    float: left;
+}
 /* End of timeline */
 
 /***** END OF EDIT *****/
 
 
 /***** SEARCH *****/
+.yui3-aclist {position: relative !important;}
+.yui3-aclist-hidden {display: none;}
 
 .no-more #more-btn {
     visibility: hidden;
 }
+
+/* search results */
+.s-item {
+    display: inline-block;
+    height: 74px;
+    margin: 0 0 5px 8px;
+    overflow: hidden;
+    vertical-align: top;
+    width: 300px;
+}
+.s-link {
+    display: block;
+    height: 74px;
+}
+
+a.s-link:hover {
+    background: #d1e1fa;
+}
+
+.s-clip {
+    float: left;
+    height: 74px;
+    margin-right: 8px;
+    overflow: hidden;
+    position: relative;
+}
+.s-img {
+    margin-top: -8px;
+}
+
+.s-title,
+.s-pub,
+.s-author,
+.s-views {
+    display: block;
+    overflow: hidden;
+}
+.s-title {
+    color: #03C;
+    font-size: 1.0833em;
+    line-height: 1.2;
+    max-height: 32px;
+}
+.s-author,
+.s-views,
+.s-pub {
+    color: #666;
+    font-size: .9166em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.s-duration {
+    background: #000;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    bottom: 2px;
+    color: #fff;
+    font-size: .9166em;
+    font-weight: bold;
+    opacity: .75;
+    padding: 0 4px;
+    position: absolute;
+    right: 2px;
+}
+
+/* End of search results */
 
 /***** END OF SEARCH *****/

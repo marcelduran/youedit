@@ -1,4 +1,5 @@
 YUI.add('youedit-edit-dd', function (Y) {
+    Y.log('dd loaded');
     var goingUp, lastX, dts,
     
         // elements
@@ -10,9 +11,10 @@ YUI.add('youedit-edit-dd', function (Y) {
         YDDM = Y.DD.DDM,
         YPlugin = Y.Plugin,
         YGlobal = Y.Global,
+        YNcreate = Y.Node.create,
 
         // make frame (li) draggable
-        ddFrame = function (node, region) {
+        ddFrame = function (node, noConstraint) {
             var dd = new YDD.Drag({
                 node: node,
                 target: {
@@ -20,14 +22,15 @@ YUI.add('youedit-edit-dd', function (Y) {
                 }
             }).plug(YPlugin.DDProxy, {
                 moveOnEnd: false
-            }).plug(YPlugin.DDConstrained, {
-                constrain2node: region || '#timeline'
             }).plug(YPlugin.DDNodeScroll, {
                 node: '#timeline ul'
             });
+            if (!noConstraint) {
+                dd.plug(YPlugin.DDConstrained, {
+                    constrain2node: '#timeline'
+                });
+            }
         };
-
-    Y.log('edit dd loaded');
 
     YDDM.on('drop:over', function (e) {
         var drop, tag,
@@ -71,10 +74,29 @@ YUI.add('youedit-edit-dd', function (Y) {
         YDDM.syncActiveShims(true);
     });
 
+    // get mouse down x position for clip
+    YDDM.on('drag:mouseDown', function (e) {
+        var x,
+            drag = e.target,
+            node = drag.get('node');
+
+        // only duration bar
+        if (!node.get('id') === 'dts-clip') {
+            return;
+        }
+
+        x = e.ev.pageX;
+        drag.get('dragNode')
+            .setX(x)
+            .setStyles({
+                paddingLeft: x - node.getX() - 60
+            });
+    });
+
     // listen for all drag:start events
     YDDM.on('drag:start', function (e) {
         //Get our drag object
-        var dragNode,
+        var dragNode, frame,
             drag = e.target,
             node = drag.get('node');
 
@@ -92,8 +114,17 @@ YUI.add('youedit-edit-dd', function (Y) {
                 .addClass('clip-drag frame');
             ye.createFrame(ye.getCurrentClip(), node);
             dragNode
-                .setContent(node.getContent())
-                .addClass('clip-drag frame');
+                .setStyles({
+                    height: 104,
+                    width: 126,
+                    border: 'none'
+                })
+            frame = dragNode.one('#frame-proxy');
+            if (!frame) {
+                frame = YNcreate('<div id="frame-proxy" class"frame"></div>');
+                dragNode.append(frame);
+            }
+            ye.createFrame(ye.getCurrentClip(), frame);
             return;
         }
 
@@ -149,7 +180,7 @@ YUI.add('youedit-edit-dd', function (Y) {
 
         // frame dropped from where?
         if (drag.get('id') === 'dts-clip') {
-            // from duratino bar
+            // from duration bar
             Y.log('clip dropped');
             cloneNode = drag.cloneNode(true);
             cloneNode
@@ -172,6 +203,7 @@ YUI.add('youedit-edit-dd', function (Y) {
 
     // initialize drag and drop timeline
     ye.ddInit = function () {
+        Y.log('ddInit');
         var tar = new YDD.Drop({
                 node: Y.one('#timeline ul')
             });

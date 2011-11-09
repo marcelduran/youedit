@@ -2,14 +2,21 @@ YUI.add('youedit-edit', function (Y) {
     Y.log('edit loaded');
     var 
         // variables
-        lastQuery, lastStart, dts,
+        dts, currentVKey, maxFrames,
 
-        // element variables
-        elSearch, elUrl, elTimeFrames,
-        elResults, elSearchArea, elClip, elEditArea,
+        // uninitialized elements
+        elUrl, elTimeFrames, elGalFrames,
+        elResults, elClip, elEditArea,
 
         // initialized variables
         edits = [],
+
+        // regular expresions
+        // matches 01:15:33 | 3:25 | 43
+        reHMS = /(\d{0,2}):?(\d{0,2}):?(\d{0,2})/,
+
+        // constants
+        FRAME_WIDTH = 126,
 
         // shorthands
         ye = Y.namespace('YouEdit'),
@@ -17,18 +24,21 @@ YUI.add('youedit-edit', function (Y) {
         YNcreate = Y.Node.create,
         YArray = Y.Array,
         arrayEach = YArray.each,
+        YLang = Y.Lang,
+        isString = YLang.isString,
+        isUndefined = YLang.isUndefined,
         video = ye.video,
         YGlobal = Y.Global,
         Ybind = Y.bind,
         base10To64 = ye.base10To64,
+        videoInfo = ye.videoInfo,
 
         // minifier helpers
-        ENCODE = encodeURIComponent,
         INT = function (s) {
             return parseInt(s, 10);
         },
 
-        // elements
+        // initialized elements
         body = Y.one('body'),
 
         // convert s in m:s
@@ -56,7 +66,7 @@ YUI.add('youedit-edit', function (Y) {
             var i, v,
                 r = 0,
                 factor = 1,
-                m = /(\d{0,2}):?(\d{0,2}):?(\d{0,2})/.exec(h);
+                m = reHMS.exec(h);
             
             for (i = 3; i > 0; i -= 1) {
                 v = parseInt(m[i], 10);
@@ -69,11 +79,67 @@ YUI.add('youedit-edit', function (Y) {
             return factor === 1 ? false : r;
         },
 
+        /**
+         * Get Youtube video thumbnail.
+         * @param {String} id The YT video ID.
+         * @param {Number} shard Optional YT sharding
+         *        server number ('' | 1-4), default = ''.
+         * @param {Number} pos Optional thumb video position
+         *        (default|1-3), default = 'default'.
+         * @return {String} The YT thumbnail url.
+         */
+        getThumb = function (id, shard, pos) {
+            var vi;
+
+            if (isUndefined(shard)) {
+                vi = videoInfo[id];
+                shard = (vi && vi.shard) || '';
+            }
+            pos = pos || 'default';
+
+            return 'http://i' + shard + '.ytimg.com/vi/' +
+                id + '/' + pos + '.jpg';
+        },
+
+        /**
+         * Update gallery of used videos in edition.
+         * @param {Array} videos List of unique video ids being used in edition.
+         * @param {String} vkey Hash of videos being used (for comparison).
+         */
+        updateGallery = function (videos, vkey) {
+            if (currentVKey === vkey) {
+                return;
+            }
+            currentVKey = vkey;
+            elGalFrames.all('li').remove(true);
+            if (!vkey) {
+                return;
+            }
+            arrayEach(videos, function (id) {
+                var info;
+
+                if (!isString(id)) {
+                    return;
+                }
+
+                info = videoInfo[id];
+                elGalFrames.append(
+                    YNcreate('<li></li>')
+                        .append(
+                            YNcreate('<a href="#" class="s-link"><img ' +
+                                'src="' + getThumb(id, info.shard) + '"></a>'
+                            )
+                            .setData('info', info)
+                        )
+                );
+            });
+        },
+
         /** 
          * Build parameters from edits
          */
         buildParams = function () {
-            var id, hid, marks, i, o, lastI, lastO,
+            var id, hid, marks, i, o, lastI, lastO, vkey,
                 ids = {},
                 v = [],
                 I = [],
@@ -116,11 +182,15 @@ YUI.add('youedit-edit', function (Y) {
             if (i) {
                 I.push(i.join('.'));
                 O.push(o.join('.'));
-            }
+            }   
 
-            YGlobal.fire('ye:paramsBuilt',
+            // update gallery of unique videos used in edition
+            vkey = v.join('.');
+            updateGallery(v, vkey);
+
+            YGlobal.fire('ye:paramsBuilt', 
                 (!v.length && !I.length && !O.length) ? '' :
-                'v=' + v.join('.') + '&i=' + I.join('!') + '&o=' + O.join('!')
+                    'v=' + vkey + '&i=' + I.join('!') + '&o=' + O.join('!')
             );
         },
         
@@ -164,7 +234,7 @@ YUI.add('youedit-edit', function (Y) {
                     win.location.hash = params;
                 };
         }()),
-        
+
         /**
          * Set preview url and location hash with editing params.
          * @param {String} params Editing parameters (querystring-like).
@@ -193,7 +263,7 @@ YUI.add('youedit-edit', function (Y) {
          * @return {Number} The index of inserted clip.
          */
         insertClip = function (clip, index) {
-            if (typeof index !== 'undefined') {
+            if (!isUndefined(index)) {
                 edits.splice(index, 0, clip);
             } else {
                 edits.push(clip);
@@ -233,30 +303,31 @@ YUI.add('youedit-edit', function (Y) {
 
         /**
          * Insert a clip to timeline.
-         * @param {Object} clip Optional clip to be appended, if ommited the
-         *        current selection is used instead.
-         * @param {Boolean} initializing Optional flag indicatiing the timeline
-         *        is initializing, thus not firing ye:clipAppended event.
+         * @param {Object} clip Clip to be appended.
+         * @param {Number} index The clips index of appended clip.
          */
-        appendClip = function (clip, initializing) {
-            var index, frame;
-
-            clip = clip || getCurrentClip();
-            index = insertClip(clip);
-            frame = createFrame(clip);
+        appendClip = function (clip, index) {
+            var frame = createFrame(clip);
 
             frame.setData('index', index);
             elTimeFrames.append(frame);
             ye.ddFrame(frame);
+        },
 
-            if (!initializing) {
-                YGlobal.fire('ye:clipAppended', clip);
-            }
+        /**
+         * Append clip from the current selection. Event fired by UI controls.
+         */
+        appendSelection = function () {
+            var clip = getCurrentClip();
+
+            appendClip(clip, insertClip(clip));
+            YGlobal.fire('ye:clipAppended', clip);
         },
 
         // get new video
         getVideo = function (ev) {
-            var id = ev.currentTarget.getData('info').id;
+            var info = ev.currentTarget.getData('info'),
+                id = info.id;
 
             Y.log('get video: ' + id);
             ev.preventDefault();
@@ -266,7 +337,7 @@ YUI.add('youedit-edit', function (Y) {
             }
 
             ye.id = id;
-            ye.loadVideo();
+            ye.loadVideo(info);
             video = ye.video;
         },
 
@@ -371,13 +442,13 @@ YUI.add('youedit-edit', function (Y) {
          * @return {Node} The frame node with clip content.
          */
         createFrame = function (edit, frame) {
-            var info, duration,
+            var duration,
                 id = edit.id,
                 i = edit.i,
-                o = edit.o;
+                o = edit.o,
+                info = videoInfo[id];
             
             if (o === Infinity) {
-                info = ye.videoInfo[id];
                 o = (info && info.duration) || 'end';
             }
             duration = o - i;
@@ -391,7 +462,7 @@ YUI.add('youedit-edit', function (Y) {
                 '<span class="to">' + convertTime(o) + '</span>' +
                 '<span class="len">' + convertTime(duration) +'</span>' +
                 '</div>' +
-                '<img src="http://i.ytimg.com/vi/' + id + '/default.jpg">' +
+                '<img src="' + getThumb(id, info.shard) + '">' +
                 '<button class="del">X</button>'
             );
 
@@ -402,8 +473,8 @@ YUI.add('youedit-edit', function (Y) {
          * Build timeline frames when initializing.
          */
         buildTimeline = function () {
-            arrayEach(edits, function (edit) {
-                appendClip(edit, 1);
+            arrayEach(edits, function (edit, index) {
+                appendClip(edit, index);
             });
         },
 
@@ -418,7 +489,7 @@ YUI.add('youedit-edit', function (Y) {
                 newIndex = (prevFrame && prevFrame.getData('index') + 1) || 0;
 
             // frame dropped from where?
-            if (typeof oldIndex !== 'undefined') {
+            if (!isUndefined(oldIndex)) {
                 // from timeline
                 clip = edits.splice(oldIndex, 1)[0];
             } else {
@@ -443,126 +514,10 @@ YUI.add('youedit-edit', function (Y) {
             Y.log(['moveClip', oldIndex, newIndex, edits]);
         },
         
-        // show search results callback
-        showSearchResults = function (res, query, start) {
-            Y.log(['parseVideoInfo', res]);
-            var feed = res.feed,
-                entries = feed && feed.entry;
-
-            // clean on new searches
-            if (start === 1) {
-                elResults.all('li').remove(true);
-                elSearchArea.removeClass('no-more');
-            }
-
-            // paginator controls
-            lastQuery = query;
-            lastStart = start;
-
-            // check for more
-            if ((start + 10) > INT(feed.openSearch$totalResults.$t)) {
-                elSearchArea.addClass('no-more');
-            }
-
-            // get entries
-            arrayEach(entries, function (entry, index) {
-                var embeddable,
-                    media = entry.media$group,
-                    id = media.yt$videoid.$t,
-                    desc = media.media$description.$t,
-                    duration = INT(media.yt$duration.seconds),
-                    title = entry.title.$t,
-                    author = entry.author[0].name.$t,
-                    pub = new Date(entry.published.$t),
-                    views = INT(entry.yt$statistics.viewCount),
-                    accesses = entry.yt$accessControl;
-
-                // check if video is embeddable
-                YArray.some(accesses, function (access) {
-                    if (access.action === 'embed' &&
-                            access.permission === 'allowed') {
-                        embeddable = 1;
-                        return 1;
-                    }
-                });
-                if (!embeddable) {
-                    return;
-                }
-
-                // fill results
-                elResults.append(YNcreate('<li></li>')
-                    .append(YNcreate('<a href="#" class="s-link"></a>')
-                        .append(YNcreate('<img>')
-                            .set('src',
-                                'http://i' + ((index % 5) || '') +
-                                '.ytimg.com/vi/' + id + '/default.jpg')
-                        )
-                        .append(YNcreate('<span class="s-title"></span>')
-                            .setContent(title)
-                        )
-                        .append(YNcreate('<span class="s-views"></span>')
-                            .setContent(views)
-                        )
-                        .append(YNcreate('<span class="s-pub"></span>')
-                            .setContent(Y.toRelativeTime(pub))
-                        )
-                        .append(YNcreate('<span class="s-author"></span>')
-                            .setContent(author)
-                        )
-                        .append(YNcreate('<span class="s-duration"></span>')
-                            .setContent(convertTime(duration))
-                        )
-                        .setData('info', {
-                            id: id,
-                            title: title,
-                            duration: duration
-                        })
-                    )
-                );
-            });
-        },
-
-        // fetch videos from gdata
-        fetchVideos = function (query, start) {
-            start = start || 1;
-            Y.jsonp('http://gdata.youtube.com/feeds/api/videos?' +
-                'v=2&alt=json-in-script&callback={callback}&max-results=10&' + 
-                'q=' + ENCODE(query) + '&start-index=' + start, {
-                    on: {
-                        success: showSearchResults
-                        // TODO: failure: searchError
-                        // TODO: timeout: searchTimeout
-                    },
-                    args: [query, start]
-                }
-            );
-        },
-
-        /**
-         * Search video submit form event.
-         * @param {Event} e The submit event to be halt.
-         * @param {String} query Optional search query, if ommited
-         *        search input value is used instead.
-         */
-        submitSearch = function (e, query) {
-            query = query || elSearch.get('value');
-
-            if (e) {
-                e.halt();
-            }
-
-            if (query && query !== lastQuery) {
-                fetchVideos(query);
-            }
-        },
-
-        // get more videos from last search
-        moreVideos = function () {
-            fetchVideos(lastQuery, lastStart + 10);
-        },
-        
         // init edit markup
         initMarkup = function () {
+            var elGallery;
+
             // set edit mode
             body
                 .removeClass('play')
@@ -605,40 +560,23 @@ YUI.add('youedit-edit', function (Y) {
                     YNcreate('<button id="preview">preview</button>')
                 );
 
-            // fill search area
-            elSearch = YNcreate(
-                '<input id="search-txt" type="text" placeholder="Search" x-webkit-speech>');
-            elResults = YNcreate('<ul id="results"></ul>');
-            elSearchArea = YNcreate('<div id="search-area" class="no-more"></div>')
-                .append(YNcreate('<div id="search-box"></div>')
-                    .append(
-                        YNcreate('<form id="search-frm"></form>')
-                            .append(elSearch)
-                            .append(
-                                YNcreate('<input type="submit">')
-                                    .setContent('Search')
-                            )
-                    )
-                )
-                .append(elResults)
-                .append(YNcreate('<div></div>')
-                    .append(YNcreate('<button id="more-btn"></button>')
-                        .setContent('more')
-                    )
-                );
+            // fill video gallery
+            elGalFrames = YNcreate('<ul id="gallery"></ul>');
+            elGallery = YNcreate('<div></div>')
+                .append(elGalFrames);
 
             // fill layout 
             Y.one('#st')
                 .append(elEditArea);
-            Y.one('#sb')
-                .append(elSearchArea, 'after');
+            Y.one('#md')
+                .append(elGallery);
+
+            // get timeline width
+            maxFrames = INT(elTimeFrames.getStyle('width') / FRAME_WIDTH);
 
             // events delegation
-            body.delegate('click', Ybind(appendClip), '#add-edit');
-            body.delegate('dblclick', Ybind(appendClip), '#dts-clip');
-            body.delegate('submit', submitSearch, '#search-frm');
-            body.delegate('webkitspeechchange', submitSearch, '#search-txt');
-            body.delegate('click', moreVideos, '#more-btn');
+            body.delegate('click', appendSelection, '#add-edit');
+            body.delegate('dblclick', appendSelection, '#dts-clip');
             body.delegate('click', preview, '#preview');
             body.delegate('click', removeClip, '#timeline .del');
             body.delegate('click', getVideo, '.s-link');
@@ -663,35 +601,10 @@ YUI.add('youedit-edit', function (Y) {
             }).render();
             dts.on('valueChange', updatePos); 
             dts.on('thumbDragEnd', videoPos); 
-            ye.ddFrame(elClip, elEditArea);
+            ye.ddFrame(elClip, true);//elEditArea);
             elClip.setContent(convertTime(duration));
             ye.dts = dts;
-        },
-        
-        /**
-         * Initialize search auto complete.
-         */
-        initAutoComplete = function () {
-            var ac;
-
-            elSearch.plug(Y.Plugin.AutoComplete, {
-                resultHighlighter: 'phraseMatch',
-                resultListLocator: '1',
-                maxResults: 8,
-                source: 'http://suggestqueries.google.com/complete/search?hl=en&ds=yt&json=t&jsonp={callback}&q={query}'
-            });
-            ac = elSearch.ac;
-            ac.after('query', function (e) {
-                submitSearch(null, e.query);
-            });
-            ac.after('activeItemChange', function (e) {
-                var value = e.newVal;
-
-                if (value) {
-                    submitSearch(null, value.getData('result').raw);
-                }
-            });
-        };
+        };        
 
     // listeners
     YGlobal.on('ye:videoChange', videoChange);
@@ -703,6 +616,8 @@ YUI.add('youedit-edit', function (Y) {
     // expose api
     ye.getCurrentClip = getCurrentClip;
     ye.createFrame = createFrame;
+    ye.convertTime = convertTime;
+    ye.getThumb = getThumb;
 
     // initialize edit mode
     ye.edit = 1;
@@ -710,13 +625,14 @@ YUI.add('youedit-edit', function (Y) {
     buildEdits();
     initMarkup();
     initSliders();
-    initAutoComplete();
+    // although params is already set for edition, call buildParams again to
+    // get the shortest and cleanest version, i.e.: without hash (when present)
     buildParams();
     buildTimeline();
     ye.ddInit();
+    ye.searchInit();
 }, '0.0.1', {
     requires: ['youedit-play', 'event-delegate', 'youedit-edit-dd',
-        'gallery-torelativetime', 'gallery-dualthumbslider', 'autocomplete',
-        'autocomplete-highlighters'],
-    use: ['youedit-edit-dd']
+        'gallery-dualthumbslider', 'youedit-edit-search'],
+    use: ['youedit-edit-dd', 'youedit-edit-search']
 });
