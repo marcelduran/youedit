@@ -1,0 +1,402 @@
+/* yui3 css reset */
+body,div,ul,li,h1,form,input,textarea,p{margin:0;padding:0;}
+img{border:0;}
+em,strong{font-style:normal;font-weight:normal;}
+h1{font-size:100%;font-weight:normal;}
+li{list-style:none;}
+input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;*font-size:100%;}
+
+/* yui3 css fonts */
+body{font:13px/1.231 arial,helvetica,clean,sans-serif;*font-size:small;*font:x-small;}
+select,input,button,textarea{font:99% arial,helvetica,clean,sans-serif;}
+
+/***** LAYOUT *****/
+
+body {
+    font-family: sans-serif;
+}
+
+#doc {
+    margin: auto;
+    min-width: 640px;
+    width: 970px;
+}
+
+#hd {
+    ibackground: green;
+}
+
+#ct {
+    background: cyan;
+    float: left;
+    width: 640px;
+}
+
+#vd {
+    background: red;
+}
+
+#md {
+    background: blue;
+}
+
+#sw {
+    background: teal;
+    float: right;
+    margin-left: -650px;
+    overflow: hidden;
+    width: 100%;
+}
+
+#sb {
+    background: yellow;
+    margin-left: 640px;
+}
+
+#st {
+    background: orange;
+    clear: both;
+}
+
+#ft {
+    ibackground: magenta;
+}
+
+.play #doc {
+    max-width: 970px;
+    width: auto;
+    _width: 970px;
+}
+
+.edit #doc {
+    min-width: 800px;
+    width: 90%;
+    /*-webkit-transition: width 2s ease-in-out;*/
+}
+
+.edit #sidebar {
+    height: 411px;
+}
+
+/* RTL intls */
+.rtl {
+    direction: rtl;
+}
+.rtl #ct {
+    float: right;
+}
+.rtl #sw {
+    float: left;
+    margin: 0 -640px 0 0;
+}
+.rtl #sb {
+    margin: 0 640px 0 0;
+}
+/* end of RTL intls */
+
+#results {
+    overflow: auto;
+    height: 372px;
+}
+
+/***** END OF LAYOUT *****/
+
+a {
+    text-decoration: none;
+}
+
+
+/***** HEADER *****/
+
+#lg {
+    font: bold 28px "Arial Narrow", Arial, sans-serif;
+    padding: 0.5em 0;
+}
+
+#lgy {
+    color: #3a3a3a;
+    padding-right: 0.1em;
+}
+
+#lge {
+    background: #ff4b4b;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ff4b4b), color-stop(50%, #f33), color-stop(85%, #b90f0f));
+    background: -webkit-linear-gradient(top, #ff4b4b 0%, #f33 50%, #b90f0f 85%);
+    border: 1px solid #f33;
+    border-bottom-color: #b90f0f;
+    border-radius:10px/13px;
+    color: #fff;
+    padding: 0.1em 0.2em;
+}
+
+/***** END Of HEADER *****/
+
+
+/***** PLAY *****/
+
+#player {
+    background-color: #000;
+    height: 390px;
+    width: 640px;
+}
+
+/***** END OF PLAY *****/
+
+
+/***** EMBED *****/
+
+.embed {
+    overflow: hidden;
+}
+
+.embed #video {
+    width: 100%;
+}
+
+/***** END OF EMBED *****/
+
+
+/***** EDIT *****/
+
+/* Dual thumb slider */
+#dts {
+    border: 1px solid #777;
+    height: 23px;
+    position: relative;
+}
+.dts-cb {
+    background: #ddd;
+    height: 1px;
+    padding: 11px 0;
+    position: absolute;
+}
+.dts-vb {
+    background: #888;
+    height: 1px;
+}
+.dts-sl {
+    cursor: move;
+    height: 23px;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 12px;
+}
+#dts-cb1.focus .dts-sl,
+#dts-cb2.focus .dts-sl {
+    border-color: #000;
+}
+#dts-cb1.focus .dts-arrow {
+    border-left-color: #000;
+}
+#dts-cb2.focus .dts-arrow {
+    border-right-color: #000;
+}
+#dts-rh {
+    background: #aaa;
+    cursor: move;
+    height: 23px;
+    position: absolute;
+}
+#dts-clip {
+    background: cyan;
+    height: 19px;
+    overflow: hidden;
+    padding-top: 4px;
+    text-align: center;
+}
+.clip-drag {
+    background: #000;
+    height: 104px !important;
+    width: 126px !important;
+}
+#dts-cb1 .dts-sl {
+    border-right: 5px solid #555;
+}
+#dts-cb2 .dts-sl {
+    border-left: 5px solid #555;
+}
+.dts-arrow {
+    border: 12px solid transparent;
+}
+#dts-cb1 .dts-arrow {
+    border-left-color: #555;
+}
+#dts-cb2 .dts-arrow {
+    border-right-color: #555;
+    margin-left: -12px;
+}
+/* End of dual thumb slider */
+
+/* Timeline */
+.scroller {
+    background: #000;
+    border-top: 5px solid #000;
+    height: 153px;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.tl-wrapper {
+    padding-top: 4px;
+    width: 300%;
+}
+
+#timeline {
+    background-color: #000;
+    border: 0 dotted #fff;
+    border-width: 8px 0;
+    zoom: 1;
+}
+
+#timeline:after {display: block; clear: both; visibility: hidden; content: '.'; height: 0;}
+
+#timeline ul {
+    background: #000;
+    float: left;
+    margin: 0;
+    min-height: 108px;
+    padding: 0;
+    position: relative;
+    width: 100%;
+    zoom: 1;
+}
+
+#dts-clip.frame,
+.frame {
+    background-color: #000;
+    cursor: move;
+    float: left;
+    list-style-type: none;
+    margin: 2px;
+    min-height: 98px;
+    min-width: 120px;
+    padding: 3px;
+    position: relative;
+    text-align: center;
+    zoom: 1;
+}
+
+.frame .time {
+    color: #e9941f;
+    font-size: 60%;
+    line-height: 10px;
+}
+
+.frame .time .from {
+    float: left;
+}
+
+.frame .time .to {
+    float: right;
+}
+
+.frame .time .len:before,
+.frame .time .from:before {
+    content: "\2190\A0" /* &larr; */
+}
+
+.time .len:after,
+.time .to:after {
+    content: "\A0\2192" /* &rarr; */
+}
+
+.frame .del {
+    bottom: 0;
+    position: absolute;
+    right: 0;
+    visibility: hidden;
+}
+
+.frame:hover {
+    background-color: #444;
+}
+
+.frame:hover .del {
+    visibility: visible;
+}
+
+#gallery li {
+    float: left;
+}
+/* End of timeline */
+
+/***** END OF EDIT *****/
+
+
+/***** SEARCH *****/
+.yui3-aclist {position: relative !important;}
+.yui3-aclist-hidden {display: none;}
+
+.no-more #more-btn {
+    visibility: hidden;
+}
+
+/* search results */
+.s-item {
+    display: inline-block;
+    height: 74px;
+    margin: 0 0 5px 8px;
+    overflow: hidden;
+    vertical-align: top;
+    width: 300px;
+}
+.s-link {
+    display: block;
+    height: 74px;
+}
+
+a.s-link:hover {
+    background: #d1e1fa;
+}
+
+.s-clip {
+    float: left;
+    height: 74px;
+    margin-right: 8px;
+    overflow: hidden;
+    position: relative;
+}
+.s-img {
+    margin-top: -8px;
+}
+
+.s-title,
+.s-pub,
+.s-author,
+.s-views {
+    display: block;
+    overflow: hidden;
+}
+.s-title {
+    color: #03C;
+    font-size: 1.0833em;
+    line-height: 1.2;
+    max-height: 32px;
+}
+.s-author,
+.s-views,
+.s-pub {
+    color: #666;
+    font-size: .9166em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.s-duration {
+    background: #000;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    bottom: 2px;
+    color: #fff;
+    font-size: .9166em;
+    font-weight: bold;
+    opacity: .75;
+    padding: 0 4px;
+    position: absolute;
+    right: 2px;
+}
+
+/* End of search results */
+
+/***** END OF SEARCH *****/
