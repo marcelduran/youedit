@@ -1,25 +1,39 @@
 /* Copyright (c) 2013, Marcel Duran & Guilherme Neumann */
 
 /* layout */
-
-#head {background-color:red; height: 40px;}
+#head {}
 #video {background-color:green; height: 60px;}
-#search {background-color:blue; height: 100px; margin-left:100px;}
+#search {height: 100px; margin-left:100px;}
 #track {background-color:orange;}
-#timeline {background-color:teal; height: 60px;}
-#footer {background-color:cyan;}
+#timeline {
+  background-color: #000;
+  padding: 4px 0;
+}
+#footer {
+  margin: 42px 0 33px 0;
+}
 #main {width: 100px; float: left;}
 #social {background-color: pink; display: none; width: 300px; margin:0 auto;}
 #comments {background-color: yellow; display: none;}
+.m-landing {
+  display: none;
+}
 
-.empty #track {display: none;}
-
+.landing #head {
+  padding: 45px 0;
+}
 .landing #track,
-.landing #video {display: none;}
+.landing #video {
+  display: none;
+}
 .landing #search {
-  position: absolute; height: 20px; width: 100px; top: 70px; left: 50%; margin-left: -50px;
+  position: absolute; height: 42px; width: 305px; top: 360px; left: 50%; margin-left: -150px;
 }
 .landing #main {width:auto; float:none;}
+
+.empty #track {
+  display: none;
+}
 
 .preview #track,
 .preview #search {display: none;}
@@ -36,7 +50,6 @@
 .watch #doc {background-color: black;}
 
 /* custom fonts */
-
 @font-face {
   font-family: 'Economica';
   font-style: normal;
@@ -47,11 +60,11 @@
   font-family: 'Economica';
   font-style: normal;
   font-weight: 700;
-  src: local('Economica Bold'), local('Economica-Bold'), url(@@cdn/Economica-Bold.woff) format('woff');
+  src: local('Economica Bold'), local('Economica-Bold'), url(@@cdn/fonts/Economica-Bold.woff) format('woff');
 }
 
 /* css reset adapted from Erik Meyer's http://meyerweb.com/eric/tools/css/reset/ */
-html, body, div, span, object, iframe, h1, h2, p, a, img, ins, ol, ul, li, form, label, video {
+html, body, div, span, object, iframe, h1, h2, h3, b, p, a, img, ins, ol, ul, li, form, label, video {
   margin: 0;
   padding: 0;
   border: 0;
@@ -69,4 +82,68 @@ ol, ul {
 /* styles */
 body {
   font-family: 'Economica', sans-serif;
+  color: #000;
+  text-align: center;
+}
+body, input {
+  text-transform: uppercase;
+}
+a {
+  text-decoration: none;
+  color: #000;
+}
+b {
+  font-weight: bold;
+}
+
+/* common */
+#timeline .container {
+  border: 7px dotted #fff;
+  border-width: 7px 0;
+  color: #fff;
+}
+#footer p {
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+#footer li {
+  font-size: 13px;
+  display: inline-block;
+  margin: 0 7px;
+}
+
+/* landing */
+.landing .m-landing {
+  display: block;
+}
+.landing .logo {
+  font-size: 120px;
+  letter-spacing: -2px;
+}
+.landing .heading {
+  font-size: 45px;
+  margin-top: 33px;
+}
+.landing .sub-heading {
+  font-size: 24px;
+  margin-bottom: 108px;
+}
+.landing #query {
+  width: 195px;
+  height: 42px;
+  font-size: 20px;
+  color: #666;
+  border: none;
+  padding: 0 3px;
+  display: inline-block;
+}
+.landing #mix {
+  width: 100px;
+  height: 42px;
+  background-color: #f30;
+  font-size: 20px;
+  color: #fff;
+  border: none;
+  display: inline-block;
+  margin-left: 1px;
 }

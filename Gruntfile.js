@@ -30,7 +30,8 @@ module.exports = function(grunt) {
             src: [
               'app.js',
               'cdn.js',
-              'templates/*'
+              'templates/*',
+              'i18n/*.json'
             ],
             dest: 'build/',
             expand: true,
@@ -65,7 +66,7 @@ module.exports = function(grunt) {
             dest: 'build/public/',
             expand: true,
             cwd: 'src/client/app/'
-          },
+          }
         ]
       }
     },

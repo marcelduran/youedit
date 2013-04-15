@@ -3,5 +3,8 @@
   "templates": {
     "main": "./templates/main.mustache"
   },
+  "paths": {
+    "i18n": "./i18n"
+  },
   "cdn": "@@cdn"
 }

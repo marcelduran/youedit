@@ -1,24 +1,42 @@
 <!doctype html>
-<html>
+<html lang="{{lang}}">
 <head>
   <meta charset="utf-8">
   <title>{{title}}</title>
-  <link rel="stylesheet" href="{{cdn}}/css/styles.css">
+  <link rel="stylesheet" href="{{&cdn}}/css/styles.css">
 </head>
 <body class="{{mode}}">
   <div id="doc">
     <div id="main">
-      <div id="head">head
-        <h1>{{title}}</h1>
+      <div id="head">
+        <h1 class="logo"><b>YOUED</b>IT</h1>
       </div>
       <div id="video">video</div>
     </div>
-    <div id="search">search</div>
+    <div id="search">
+      <form>
+        <input type="text" id="query">  
+        <input id="mix" class="m-landing" type="submit" value="{{_mix_button_}}">
+      </form>
+    </div>
     <div id="track">track</div>
-    <div id="timeline">timeline</div>
+    <div id="timeline">
+      <div class="container">
+        <h2 class="m-landing heading">{{_heading_}}</h2>
+        <h3 class="m-landing sub-heading">{{_&sub_heading_}}</h3>
+      </div>
+    </div>
     <div id="social">social</div>
     <div id="comments">comments</div>
-    <div id="footer">footer</div>
+    <div id="footer">
+      <p>{{_copyright_}}</p>
+      <ul>
+        <li><a href="#about">{{_about_}}</a></li>
+        <li><a href="#privacy">{{_privacy_}}</a></li>
+        <li><a href="#terms">{{_terms_}}</a></li>
+        <li><a href="#help">{{_help_}}</a></li>
+      </ul>
+    </div>
   </div>
 </body>
 </html>
