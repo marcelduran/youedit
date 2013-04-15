@@ -1,0 +1,36 @@
+/* Copyright (c) 2013, Marcel Duran & Guilherme Neumann */
+
+/* layout */
+
+#head {background-color:red; height: 40px;}
+#video {background-color:green; height: 60px;}
+#search {background-color:blue; height: 100px; margin-left:100px;}
+#track {background-color:orange;}
+#timeline {background-color:teal; height: 60px;}
+#footer {background-color:cyan;}
+#main {width: 100px; float: left;}
+#social {background-color: pink; display: none; width: 300px; margin:0 auto;}
+#comments {background-color: yellow; display: none;}
+
+.empty #track {display: none;}
+
+.landing #track,
+.landing #video {display: none;}
+.landing #search {
+  position: absolute; height: 20px; width: 100px; top: 70px; left: 50%; margin-left: -50px;
+}
+.landing #main {width:auto; float:none;}
+
+.preview #track,
+.preview #search {display: none;}
+.preview #main {width:auto; float: none;}
+.preview #video {width:300px; float: none; margin:0 auto;}
+.preview #doc {background-color: black;}
+
+.watch #track,
+.watch #search,
+.watch #timeline {display: none;}
+.watch #social,
+.watch #comments {display: block;}
+.watch #main {width:300px; float: none; margin:0 auto;}
+.watch #doc {background-color: black;}

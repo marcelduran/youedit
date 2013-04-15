@@ -1,0 +1,7 @@
+{
+  "port": 8000,
+  "templates": {
+    "main": "./templates/main.mustache"
+  },
+  "cdn": "@@cdn"
+}
