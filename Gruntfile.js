@@ -37,12 +37,10 @@ module.exports = function(grunt) {
             cwd: 'src/server/'
           },
           {
-            src: [
-              'css/*.css'
-            ],
+            src: 'fonts/*.woff',
             dest: 'build/public/',
             expand: true,
-            cwd: 'src/client/app/'
+            cwd: 'src/client'
           }
         ]
       }
@@ -61,7 +59,13 @@ module.exports = function(grunt) {
             dest: 'build/config/',
             expand: true,
             flatten: true
-          }
+          },
+          {
+            src: 'css/*.css',
+            dest: 'build/public/',
+            expand: true,
+            cwd: 'src/client/app/'
+          },
         ]
       }
     },
