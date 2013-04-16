@@ -2,7 +2,12 @@
   "en_US": {
     "heading": "start mixing and remixing",
     "sub_heading": "search and mix <b>videos and music</b> to create your own mashups",
-    "mix_button": "mix",
+    "mix": "mix",
+
+    "remix": "remix",
+    "views": "<span>1,234</span> views",
+    "share_heading": "share your video",
+    "share_message": "show to your frinds your new mix",
 
     "copyright": "© 2013 YOUED.IT",
     "about": "about",

@@ -6,37 +6,69 @@
   <link rel="stylesheet" href="{{&cdn}}/css/styles.css">
 </head>
 <body class="{{mode}}">
+
   <div id="doc">
+
     <div id="main">
+
       <div id="head">
         <h1 class="logo"><b>YOUED</b>IT</h1>
+        <div class="m-watch">
+          <h2>{{mixTitle}}</h2>
+          <a href="remix" role="button">{{_remix_}}</a>
+        </div>
       </div>
+
       <div id="video">video</div>
-    </div>
+
+      <div id="social" class="m-watch">
+        <ul>
+          <li id="twitter">twitter</li>
+          <li id="facebook">facebook</li>
+          <li id="gplus">google+</li>
+          <li><input type="text" id="link" value="http://do.youed.it/Sykt56s"></li>
+        </ul>
+        <span id="views">{{_&views_}}</span>
+        <div id="share">
+          <p class="heading">{{_share_heading_}}</p>
+          <p class="message">{{_share_message_}}</p>
+          <a class="close" role="button" href="#close">x</a>
+        </div>
+      </div>
+
+    </div><!-- main -->
+
     <div id="search">
       <form>
         <input type="text" id="query">  
-        <input id="mix" class="m-landing" type="submit" value="{{_mix_button_}}">
+        <input id="mix" class="m-landing" type="submit" value="{{_mix_}}">
       </form>
     </div>
+
     <div id="track">track</div>
+
     <div id="timeline">
       <div class="container">
-        <h2 class="m-landing heading">{{_heading_}}</h2>
-        <h3 class="m-landing sub-heading">{{_&sub_heading_}}</h3>
+        <div class="m-landing">
+          <h2 class="heading">{{_heading_}}</h2>
+          <h3 class="sub-heading">{{_&sub_heading_}}</h3>
+        </div>
       </div>
     </div>
-    <div id="social">social</div>
-    <div id="comments">comments</div>
-    <div id="footer">
-      <p>{{_copyright_}}</p>
-      <ul>
-        <li><a href="#about">{{_about_}}</a></li>
-        <li><a href="#privacy">{{_privacy_}}</a></li>
-        <li><a href="#terms">{{_terms_}}</a></li>
-        <li><a href="#help">{{_help_}}</a></li>
-      </ul>
-    </div>
+
+  </div><!-- doc -->
+
+  <div id="comments" class="m-watch">comments</div>
+
+  <div id="footer">
+    <p>{{_copyright_}}</p>
+    <ul>
+      <li><a href="#about">{{_about_}}</a></li>
+      <li><a href="#privacy">{{_privacy_}}</a></li>
+      <li><a href="#terms">{{_terms_}}</a></li>
+      <li><a href="#help">{{_help_}}</a></li>
+    </ul>
   </div>
+
 </body>
 </html>

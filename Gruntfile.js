@@ -29,7 +29,6 @@ module.exports = function(grunt) {
           {
             src: [
               'app.js',
-              'cdn.js',
               'templates/*',
               'i18n/*.json'
             ],
@@ -51,7 +50,7 @@ module.exports = function(grunt) {
       build: {
         options: {
           variables: {
-            cdn: 'http://localhost:9000'
+            cdn: 'http://localhost:8000'
           }
         },
         files: [

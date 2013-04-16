@@ -1,35 +1,42 @@
 /* Copyright (c) 2013, Marcel Duran & Guilherme Neumann */
 
 /* layout */
-#head {}
-#video {background-color:green; height: 60px;}
+#head {
+  text-align: left;
+  font-size: 42px;
+}
+#video {
+  background-color: #000;
+  height: 480px;
+}
 #search {height: 100px; margin-left:100px;}
 #track {background-color:orange;}
 #timeline {
   background-color: #000;
   padding: 4px 0;
 }
-#footer {
-  margin: 42px 0 33px 0;
-}
 #main {width: 100px; float: left;}
-#social {background-color: pink; display: none; width: 300px; margin:0 auto;}
-#comments {background-color: yellow; display: none;}
-.m-landing {
+.m-landing,
+.m-watch {
   display: none;
 }
 
-.landing #head {
-  padding: 45px 0;
-}
 .landing #track,
 .landing #video {
   display: none;
 }
 .landing #search {
-  position: absolute; height: 42px; width: 305px; top: 360px; left: 50%; margin-left: -150px;
+  position: absolute;
+  height: 42px;
+  width: 305px;
+  top: 360px;
+  left: 50%;
+  margin-left: -150px;
 }
-.landing #main {width:auto; float:none;}
+.landing #main {
+  width: auto;
+  float: none;
+}
 
 .empty #track {
   display: none;
@@ -39,15 +46,17 @@
 .preview #search {display: none;}
 .preview #main {width:auto; float: none;}
 .preview #video {width:300px; float: none; margin:0 auto;}
-.preview #doc {background-color: black;}
 
 .watch #track,
 .watch #search,
-.watch #timeline {display: none;}
-.watch #social,
-.watch #comments {display: block;}
-.watch #main {width:300px; float: none; margin:0 auto;}
-.watch #doc {background-color: black;}
+.watch #timeline {
+  display: none;
+}
+.watch #main {
+  width: 640px;
+  float: none;
+  margin: 0 auto;
+}
 
 /* custom fonts */
 @font-face {
@@ -82,8 +91,10 @@ ol, ul {
 /* styles */
 body {
   font-family: 'Economica', sans-serif;
+  background-color: #fff;
   color: #000;
   text-align: center;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 body, input {
   text-transform: uppercase;
@@ -102,6 +113,9 @@ b {
   border-width: 7px 0;
   color: #fff;
 }
+#footer {
+  margin: 42px 0 33px 0;
+}
 #footer p {
   font-size: 16px;
   margin-bottom: 16px;
@@ -111,10 +125,18 @@ b {
   display: inline-block;
   margin: 0 7px;
 }
+.logo {
+  letter-spacing: -1px;
+  display: inline-block;
+}
 
 /* landing */
 .landing .m-landing {
   display: block;
+}
+.landing #head {
+  padding: 45px 0;
+  text-align: center;
 }
 .landing .logo {
   font-size: 120px;
@@ -146,4 +168,106 @@ b {
   border: none;
   display: inline-block;
   margin-left: 1px;
+}
+
+/* watch */
+.watch .m-watch {
+  display: block;
+}
+.watch #head {
+  color: #fff;
+  padding: 25px 0;
+}
+.watch #head .m-watch {
+  color: #666;
+  display: inline-block;
+  width: 510px;
+  float: right;
+}
+.watch #head h2 {
+  float: left;
+  width: 410px;
+  height: 42px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.watch #head a {
+  font-size: 20px;
+  width: 100px;
+  background: #f30;
+  color: #fff;
+  padding: 11px 0;
+  display: inline-block;
+  text-align: center;
+  float: right;
+}
+.watch #social {
+  padding: 33px 0;
+  height: 24px;
+}
+.watch #social ul,
+.watch #social li {
+  display: inline-block;
+  float: left;
+}
+.watch #social li {
+  margin-right: 20px;
+}
+.watch #link {
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  padding: 5px;
+  color: #999;
+  background: #333;
+  text-transform: none;
+  border: none;
+}
+.watch #views {
+  font-size: 24px;
+  color: #fff;
+  float: right;
+}
+.watch #doc,
+.preview #doc {
+  background-color: #1f1f1f;
+}
+#comments {
+  margin-top: 40px;
+}
+#share {
+  background: #f30;
+  color: #fff;
+  width: 574px;
+  position: relative;
+  margin: -220px auto 0 auto;
+}
+#share .heading {
+  font-size: 45px;
+  padding: 33px 0 10px 0;
+}
+#share .message {
+  font-size: 24px;
+  font-weight: bold;
+  padding-bottom: 33px;
+}
+#share .close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #fff;
+}
+#share:before,
+#share:after {
+  position: absolute;
+  left: 15%;
+  width: 0;
+  height: 0;
+  content: '';
+}
+#share:after {
+  margin-left: -20px;
+  border-right: 20px solid transparent;
+  border-top: 20px solid #f30;
+  border-left: 20px solid transparent;
 }

@@ -42,6 +42,7 @@ var app = express();
 app.use(express.compress());
 app.use(express.logger());
 app.use(locale(i18n.supported));
+app.use(express.static(path.resolve(__dirname, './public/')));
 
 // render
 function render(locale, title) {
@@ -54,7 +55,8 @@ function render(locale, title) {
   }
 
   return compiled({
-    title: title || 'YouEd.it',
+    title: title,
+    mixTitle: title,
     mode: 'watch',
     cdn: config.cdn
   });
