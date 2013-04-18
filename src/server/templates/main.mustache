@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <title>{{title}}</title>
-  <link rel="stylesheet" href="{{&cdn}}/css/styles.css">
+  <link rel="stylesheet" href="{{=&cdn=}}/css/styles.css">
 </head>
-<body class="{{mode}}">
+<body class="{{=mode=}}">
 
   <div id="doc">
 
@@ -17,9 +17,20 @@
           <h2>{{mixTitle}}</h2>
           <a href="remix" role="button">{{_remix_}}</a>
         </div>
+        <div class="m-edit">
+          <form>
+            <input type="text" id="mix-title" placeholder="{{_mix_title_}}">  
+            <input id="preview" type="submit" value="{{_preview_}}">
+          </form>
+        </div>
       </div>
 
-      <div id="video">video</div>
+      <div id="video">
+        <div class="box-message">
+          <h2 class="heading">{{_edit_heading_}}</h2>
+          <h3 class="message">{{_&edit_message_}}</h3>
+        </div>
+      </div>
 
       <div id="social" class="m-watch">
         <ul>
@@ -30,33 +41,45 @@
         </ul>
         <span id="views">{{_&views_}}</span>
         <div id="share">
-          <p class="heading">{{_share_heading_}}</p>
-          <p class="message">{{_share_message_}}</p>
+          <h2 class="heading">{{_share_heading_}}</h2>
+          <h3 class="message">{{_share_message_}}</h3>
           <a class="close" role="button" href="#close">x</a>
         </div>
-      </div>
+      </div><!-- social -->
 
     </div><!-- main -->
 
-    <div id="search">
+    <div id="search" class="m-landing m-edit">
       <form>
+        <a id="source" class="m-edit icon-video"></a>
         <input type="text" id="query">  
         <input id="mix" class="m-landing" type="submit" value="{{_mix_}}">
       </form>
-    </div>
-
-    <div id="track">track</div>
-
-    <div id="timeline">
-      <div class="container">
-        <div class="m-landing">
-          <h2 class="heading">{{_heading_}}</h2>
-          <h3 class="sub-heading">{{_&sub_heading_}}</h3>
-        </div>
-      </div>
+      <div id="results" class="m-edit">results</div>
     </div>
 
   </div><!-- doc -->
+
+  <div id="track" class="m-edit block">
+    <div id="duration" class="centered">1:38</div>
+  </div>
+
+  <div id="timeline" class="m-landing m-watch m-edit">
+    <div class="container">
+      <div class="m-landing">
+        <h2 class="heading">{{_landing_heading_}}</h2>
+        <h3 class="message">{{_&landing_message_}}</h3>
+      </div>
+      <div class="m-edit">
+        <div id="video-track">
+          <h2><i class="icon-video"></i>{{_&empty_video_timeline_}}</h2>
+        </div>
+        <div id="audio-track">
+          <h2><i class="icon-audio"></i>{{_&empty_audio_timeline_}}</h2>
+        </div>
+      </div>
+    </div>
+  </div><!-- timeline -->
 
   <div id="comments" class="m-watch">comments</div>
 

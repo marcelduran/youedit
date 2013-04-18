@@ -49,16 +49,19 @@ function render(locale, title) {
   var compiled = pages.watch[locale];
 
   if (!compiled) {
-    compiled = pages.watch[locale] = Mustache.compile(
-      Mustache.compile(pages.main, ['{{_', '_}}'])(i18n[locale].t(locale))
-    );
+    var content = Mustache.compile(
+      pages.main, ['{{_', '_}}'])(i18n[locale].t(locale));
+
+    content = Mustache.compile(content, ['{{=', '=}}'])({
+      mode: 'edit',
+      cdn: config.cdn
+    });
+    compiled = pages.watch[locale] = Mustache.compile(content);
   }
 
   return compiled({
     title: title,
-    mixTitle: title,
-    mode: 'watch',
-    cdn: config.cdn
+    mixTitle: title
   });
 }
 

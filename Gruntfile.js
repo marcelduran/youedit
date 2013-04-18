@@ -73,7 +73,7 @@ module.exports = function(grunt) {
     regarde: {
       server: {
         files: [
-          'src/server/**/*.*'
+          'src/**/*.*'
         ],
         tasks: ['forever:restart']
       }
@@ -81,7 +81,7 @@ module.exports = function(grunt) {
 
     forever: {
       options: {
-        index: 'src/server/app.js'
+        index: 'build/app.js'
       }
     }
 

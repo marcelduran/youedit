@@ -1,44 +1,31 @@
 /* Copyright (c) 2013, Marcel Duran & Guilherme Neumann */
 
 /* layout */
-#head {
-  text-align: left;
-  font-size: 42px;
-}
 #video {
   background-color: #000;
   height: 480px;
 }
-#search {height: 100px; margin-left:100px;}
-#track {background-color:orange;}
+#search {
+  width: 370px;
+  float: right;
+  position: relative;
+}
 #timeline {
   background-color: #000;
   padding: 4px 0;
 }
-#main {width: 100px; float: left;}
+#main {
+  width: 530px;
+  float: left;
+}
+#doc {
+  height: 382px;
+  width: 945px;
+  margin: 18px auto 45px auto;
+}
 .m-landing,
-.m-watch {
-  display: none;
-}
-
-.landing #track,
-.landing #video {
-  display: none;
-}
-.landing #search {
-  position: absolute;
-  height: 42px;
-  width: 305px;
-  top: 360px;
-  left: 50%;
-  margin-left: -150px;
-}
-.landing #main {
-  width: auto;
-  float: none;
-}
-
-.empty #track {
+.m-watch,
+.m-edit {
   display: none;
 }
 
@@ -47,11 +34,6 @@
 .preview #main {width:auto; float: none;}
 .preview #video {width:300px; float: none; margin:0 auto;}
 
-.watch #track,
-.watch #search,
-.watch #timeline {
-  display: none;
-}
 .watch #main {
   width: 640px;
   float: none;
@@ -71,6 +53,15 @@
   font-weight: 700;
   src: local('Economica Bold'), local('Economica-Bold'), url(@@cdn/fonts/Economica-Bold.woff) format('woff');
 }
+@font-face {
+  font-family: 'FontAwesome';
+  src: url('@@cdn/fonts/fontawesome-webfont.eot?v=3.0.1');
+  src: url('@@cdn/fonts/fontawesome-webfont.eot?#iefix&v=3.0.1') format('embedded-opentype'),
+    url('@@cdn/fonts/fontawesome-webfont.woff?v=3.0.1') format('woff'),
+    url('@@cdn/fonts/fontawesome-webfont.ttf?v=3.0.1') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 
 /* css reset adapted from Erik Meyer's http://meyerweb.com/eric/tools/css/reset/ */
 html, body, div, span, object, iframe, h1, h2, h3, b, p, a, img, ins, ol, ul, li, form, label, video {
@@ -88,13 +79,49 @@ ol, ul {
   list-style: none;
 }
 
+/* font awesome styles */
+[class^="icon-"],
+[class*=" icon-"] {
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased;
+
+  /* sprites.less reset */
+  display: inline;
+  width: auto;
+  height: auto;
+  line-height: normal;
+  vertical-align: baseline;
+  background-image: none;
+  background-position: 0% 0%;
+  background-repeat: repeat;
+  margin-top: 0;
+}
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  text-decoration: inherit;
+  display: inline-block;
+  speak: none;
+}
+a [class^="icon-"],
+a [class*=" icon-"] {
+  display: inline-block;
+}
+.icon-film:before	{ content: "\f021"; }
+.icon-close:before { content: "\f022"; }
+.icon-audio:before { content: "\f023"; }
+.icon-video:before { content: "\f024"; }
+.icon-link:before { content: "\f025"; }
+
 /* styles */
 body {
   font-family: 'Economica', sans-serif;
   background-color: #fff;
   color: #000;
   text-align: center;
-  -webkit-font-smoothing: subpixel-antialiased;
+  -webkit-font-smoothing: antialiased;
 }
 body, input {
   text-transform: uppercase;
@@ -108,6 +135,23 @@ b {
 }
 
 /* common */
+#head {
+  text-align: left;
+  font-size: 42px;
+}
+#search {
+  text-align: left;
+}
+#query {
+  height: 40px;
+  font-size: 20px;
+}
+#query,
+#mix-title {
+  -moz-box-shadow: inset 0 3px 5px #d4d4d4;
+  -webkit-box-shadow: inset 0 3px 5px #d4d4d4;
+  box-shadow: inset 0 3px 5px #d4d4d4;
+}
 #timeline .container {
   border: 7px dotted #fff;
   border-width: 7px 0;
@@ -129,10 +173,29 @@ b {
   letter-spacing: -1px;
   display: inline-block;
 }
+.box-message {
+  display: table-cell;
+  vertical-align: middle;
+}
 
 /* landing */
 .landing .m-landing {
   display: block;
+}
+.landing #video {
+  display: none;
+}
+.landing #search {
+  position: absolute;
+  height: 42px;
+  width: 305px;
+  top: 360px;
+  left: 50%;
+  margin-left: -150px;
+}
+.landing #main {
+  width: auto;
+  float: none;
 }
 .landing #head {
   padding: 45px 0;
@@ -146,14 +209,12 @@ b {
   font-size: 45px;
   margin-top: 33px;
 }
-.landing .sub-heading {
+.landing .message {
   font-size: 24px;
   margin-bottom: 108px;
 }
 .landing #query {
   width: 195px;
-  height: 42px;
-  font-size: 20px;
   color: #666;
   border: none;
   padding: 0 3px;
@@ -202,19 +263,19 @@ b {
   text-align: center;
   float: right;
 }
-.watch #social {
+#social {
   padding: 33px 0;
   height: 24px;
 }
-.watch #social ul,
-.watch #social li {
+#social ul,
+#social li {
   display: inline-block;
   float: left;
 }
-.watch #social li {
+#social li {
   margin-right: 20px;
 }
-.watch #link {
+#link {
   font-family: Arial, sans-serif;
   font-size: 11px;
   padding: 5px;
@@ -270,4 +331,135 @@ b {
   border-right: 20px solid transparent;
   border-top: 20px solid #f30;
   border-left: 20px solid transparent;
+}
+
+/* edit */
+.edit .m-edit {
+  display: block;
+}
+.edit #video {
+  height: 322px;
+  background: #f30;
+  color: #fff;
+  display: table;
+  width: 100%;
+}
+.empty #track {
+  display: none;
+}
+.edit #query {
+  width: 308px;
+  border: 1px solid #e4e4e4;
+  color: #999;
+  padding-left: 60px;
+}
+.edit #source {
+  width: 54px;
+  padding-top: 11px;
+  text-align: center;
+  font-size: 18px;
+  height: 31px;
+  border-right: 1px dotted #cacaca;
+  position: absolute;
+  top: 2px;
+  color: #999;
+}
+.edit #results:before,
+.edit #results:after {
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  content: '';
+  margin-left: -20px;
+  border-right: 20px solid transparent;
+  border-left: 20px solid transparent;
+}
+.edit #results:after {
+  top: 43px;
+  border-top: 20px solid #fff;
+}
+.edit #results:before {
+  top: 44px;
+  border-top: 20px solid #e4e4e4;
+}
+#results {
+  height: 322px;
+  margin-top: 18px;
+  overflow: scroll;
+}
+.edit #head {
+  margin-bottom: 18px;  
+}
+#video .heading {
+  font-size: 70px;
+}
+#video .message {
+  font-size: 24px;
+}
+#mix-title {
+  font-size: 30px;
+  letter-spacing: -1px;
+  color: #ccc;
+  padding-left: 10px;
+  height: 38px;
+  border: 1px solid #e4e4e4;
+  width: 255px;
+  float: left;
+}
+#preview {
+  font-size: 20px;
+  width: 120px;
+  height: 42px;
+  border: none;
+  background: #999;
+  color: #fff;
+  float: right;
+}
+.edit #head .m-edit {
+  width: 400px;
+  float: right;
+}
+#track {
+  height: 45px;
+  display: relative;
+  background-color:orange;
+  width: 98%;
+  margin: 0 auto 35px auto;
+}
+.block:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -0.25em;
+}
+.centered {
+  display: inline-block;
+  vertical-align: middle;
+}
+#duration {
+  background: #fff;
+  font-size: 16px;
+  padding: 4px 13px;
+}
+#video-track,
+#audio-track {
+  display: table;
+  width: 100%;
+}
+#video-track {
+  height: 121px;
+  border-bottom: 1px solid #242424;
+}
+#audio-track {
+  height: 54px;
+}
+#timeline .m-edit h2 {
+  font-size: 18px;
+  display: table-cell;
+  vertical-align: middle;
+}
+#timeline .m-edit i {
+  margin-right: 10px;
 }
