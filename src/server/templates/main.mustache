@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{lang}}">
+<html lang="{{=lang=}}">
 <head>
   <meta charset="utf-8">
   <title>{{title}}</title>
@@ -19,31 +19,33 @@
         </div>
         <div class="m-edit">
           <form>
-            <input type="text" id="mix-title" placeholder="{{_mix_title_}}">  
+            <input type="text" id="mix-title" placeholder="{{_mix_title_}}" maxlength="100">  
             <input id="preview" type="submit" value="{{_preview_}}">
           </form>
         </div>
-      </div>
+      </div><!-- main -->
 
       <div id="video">
         <div class="box-message">
           <h2 class="heading">{{_edit_heading_}}</h2>
           <h3 class="message">{{_&edit_message_}}</h3>
         </div>
-      </div>
+      </div><!-- video -->
 
       <div id="social" class="m-watch">
         <ul>
           <li id="twitter">twitter</li>
           <li id="facebook">facebook</li>
           <li id="gplus">google+</li>
-          <li><input type="text" id="link" value="http://do.youed.it/Sykt56s"></li>
+          <li class="icon-link"><input type="text" id="link" spellcheck="false" value="http://do.youed.it/Sykt56s"></li>
         </ul>
         <span id="views">{{_&views_}}</span>
         <div id="share">
-          <h2 class="heading">{{_share_heading_}}</h2>
-          <h3 class="message">{{_share_message_}}</h3>
-          <a class="close" role="button" href="#close">x</a>
+          <div class="box-message">
+            <h2 class="heading">{{_share_heading_}}</h2>
+            <h3 class="message">{{_share_message_}}</h3>
+          </div>
+          <a class="close icon-close" role="button" href="#close"></a>
         </div>
       </div><!-- social -->
 
@@ -51,20 +53,44 @@
 
     <div id="search" class="m-landing m-edit">
       <form>
-        <a id="source" class="m-edit icon-video"></a>
+        <div class="m-edit">
+          <a id="source" class="icon-video" href="#source"></a>
+          <div class="baloon">
+            <a href="#video"><i class="icon-video"></i>{{_video_}}</a>
+            <a href="#audio"><i class="icon-audio"></i>{{_sound_and_music_}}</a>
+            <a href="#mix"><i class="icon-film"></i>{{_used_in_this_mix_}}</a>
+          </div>
+        </div>
         <input type="text" id="query">  
         <input id="mix" class="m-landing" type="submit" value="{{_mix_}}">
       </form>
-      <div id="results" class="m-edit">results</div>
-    </div>
+      <div id="results" class="m-edit">
+
+        <ul>
+          <li>
+            <a href="#">
+              <span class="clip">
+                <img src="http://i3.ytimg.com/vi/h_L4Rixya64/default.jpg">
+                <span class="duration">4:17</span>
+              </span>
+              <h2 class="title">Foo Fighters - Best of You</h2>
+              <p class="author">by VEVO</p>
+              <p class="views">30,696,314 views</p>
+              <p class="pub">3 years ago</p>
+            </a>
+          </li>
+        </ul>
+
+      </div>
+    </div><!-- search -->
 
   </div><!-- doc -->
 
   <div id="track" class="m-edit block">
-    <div id="duration" class="centered">1:38</div>
+    <input id="duration" class="centered" value="2:34">
   </div>
 
-  <div id="timeline" class="m-landing m-watch m-edit">
+  <div id="timeline" class="m-landing m-edit">
     <div class="container">
       <div class="m-landing">
         <h2 class="heading">{{_landing_heading_}}</h2>
@@ -91,7 +117,7 @@
       <li><a href="#terms">{{_terms_}}</a></li>
       <li><a href="#help">{{_help_}}</a></li>
     </ul>
-  </div>
+  </div><!-- footer -->
 
 </body>
 </html>

@@ -15,6 +15,12 @@
     "edit_message": "<b>drag or click</b> your selected video or audio",
     "empty_video_timeline": "your <b>video timeline</b> is empty",
     "empty_audio_timeline": "your <b>audio timeline</b> is empty",
+    "video": "video",
+    "sound_and_music": "sound and music",
+    "used_in_this_mix": "used in this mix",
+    "add_video": "add video",
+    "add_audio": "add audio",
+    "looping": "looping",
 
     "copyright": "© 2013 YOUED.IT",
     "about": "about",

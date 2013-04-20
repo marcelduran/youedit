@@ -37,26 +37,32 @@ files.forEach(function eachFile(file) {
   }
 });
 
-// initialize web app
+// initialize express app
 var app = express();
 app.use(express.compress());
 app.use(express.logger());
 app.use(locale(i18n.supported));
 app.use(express.static(path.resolve(__dirname, './public/')));
 
-// render
+function compileTemplate(locale, mode) {
+  var content = Mustache.compile(
+    pages.main, ['{{_', '_}}'])(i18n[locale].t(locale));
+
+  content = Mustache.compile(content, ['{{=', '=}}'])({
+    lang: locale.replace('_', '-'),
+    mode: mode,
+    cdn: config.cdn
+  });
+
+  return Mustache.compile(content);
+}
+
+// render watch page
 function render(locale, title) {
   var compiled = pages.watch[locale];
 
   if (!compiled) {
-    var content = Mustache.compile(
-      pages.main, ['{{_', '_}}'])(i18n[locale].t(locale));
-
-    content = Mustache.compile(content, ['{{=', '=}}'])({
-      mode: 'edit',
-      cdn: config.cdn
-    });
-    compiled = pages.watch[locale] = Mustache.compile(content);
+    compiled = pages.watch[locale] = compileTemplate(locale, 'edit');
   }
 
   return compiled({
@@ -75,15 +81,9 @@ app.get('/', function(req, res) {
   } else {
     landing = pages.landing[locale];
     if (!landing) {
-      pages.landing[locale] = Mustache.compile(pages.main,
-        ['{{_', '_}}'])(i18n[locale].t(locale));
-      landing = pages.landing[locale] =
-        Mustache.to_html(pages.landing[locale], {
-          mode: 'landing',
-          title: 'YouEd.it',
-          cdn: config.cdn,
-          lang: locale.replace('_', '-')
-        });
+      landing = pages.landing[locale] = compileTemplate(locale, 'landing')({
+        title: 'YouEd.it',
+      });
     }
   }
 

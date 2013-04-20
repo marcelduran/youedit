@@ -1,45 +1,5 @@
 /* Copyright (c) 2013, Marcel Duran & Guilherme Neumann */
 
-/* layout */
-#video {
-  background-color: #000;
-  height: 480px;
-}
-#search {
-  width: 370px;
-  float: right;
-  position: relative;
-}
-#timeline {
-  background-color: #000;
-  padding: 4px 0;
-}
-#main {
-  width: 530px;
-  float: left;
-}
-#doc {
-  height: 382px;
-  width: 945px;
-  margin: 18px auto 45px auto;
-}
-.m-landing,
-.m-watch,
-.m-edit {
-  display: none;
-}
-
-.preview #track,
-.preview #search {display: none;}
-.preview #main {width:auto; float: none;}
-.preview #video {width:300px; float: none; margin:0 auto;}
-
-.watch #main {
-  width: 640px;
-  float: none;
-  margin: 0 auto;
-}
-
 /* custom fonts */
 @font-face {
   font-family: 'Economica';
@@ -115,7 +75,7 @@ a [class*=" icon-"] {
 .icon-video:before { content: "\f024"; }
 .icon-link:before { content: "\f025"; }
 
-/* styles */
+/* general styles */
 body {
   font-family: 'Economica', sans-serif;
   background-color: #fff;
@@ -139,8 +99,28 @@ b {
   text-align: left;
   font-size: 42px;
 }
+#video {
+  background-color: #000;
+  height: 390px;
+}
 #search {
+  width: 370px;
+  float: right;
+  position: relative;
   text-align: left;
+}
+#timeline {
+  background-color: #000;
+  padding: 4px 0;
+}
+#main {
+  width: 530px;
+  float: left;
+}
+.m-landing,
+.m-watch,
+.m-edit {
+  display: none;
 }
 #query {
   height: 40px;
@@ -182,7 +162,8 @@ b {
 .landing .m-landing {
   display: block;
 }
-.landing #video {
+.landing #video,
+.landing #source {
   display: none;
 }
 .landing #search {
@@ -219,6 +200,7 @@ b {
   border: none;
   padding: 0 3px;
   display: inline-block;
+  height: 42px;
 }
 .landing #mix {
   width: 100px;
@@ -234,6 +216,11 @@ b {
 /* watch */
 .watch .m-watch {
   display: block;
+}
+.watch #main {
+  width: 640px;
+  float: none;
+  margin: 0 auto;
 }
 .watch #head {
   color: #fff;
@@ -275,14 +262,23 @@ b {
 #social li {
   margin-right: 20px;
 }
+#social li.icon-link {
+  color: #fff;
+  font-size: 14px;
+  background: #333;
+  padding-left: 10px;
+  height: 22px;
+  line-height: .5;
+}
 #link {
-  font-family: Arial, sans-serif;
-  font-size: 11px;
+  font: 11px Arial, sans-serif;
   padding: 5px;
   color: #999;
   background: #333;
   text-transform: none;
   border: none;
+  margin: 0 0 0 3px;
+  width: 130px;
 }
 .watch #views {
   font-size: 24px;
@@ -296,21 +292,26 @@ b {
 #comments {
   margin-top: 40px;
 }
+.watch #share {
+  display: none;
+}
+.watch.new #share {
+  display: table;
+}
 #share {
   background: #f30;
   color: #fff;
+  height: 127px;
   width: 574px;
   position: relative;
   margin: -220px auto 0 auto;
 }
 #share .heading {
   font-size: 45px;
-  padding: 33px 0 10px 0;
 }
 #share .message {
   font-size: 24px;
   font-weight: bold;
-  padding-bottom: 33px;
 }
 #share .close {
   position: absolute;
@@ -318,15 +319,13 @@ b {
   right: 10px;
   color: #fff;
 }
-#share:before,
 #share:after {
   position: absolute;
   left: 15%;
   width: 0;
   height: 0;
   content: '';
-}
-#share:after {
+  bottom: -20px;
   margin-left: -20px;
   border-right: 20px solid transparent;
   border-top: 20px solid #f30;
@@ -336,6 +335,11 @@ b {
 /* edit */
 .edit .m-edit {
   display: block;
+}
+.edit #doc {
+  height: 382px;
+  width: 945px;
+  margin: 18px auto 45px auto;
 }
 .edit #video {
   height: 322px;
@@ -353,16 +357,27 @@ b {
   color: #999;
   padding-left: 60px;
 }
-.edit #source {
+#source {
   width: 54px;
   padding-top: 11px;
-  text-align: center;
   font-size: 18px;
   height: 31px;
   border-right: 1px dotted #cacaca;
   position: absolute;
   top: 2px;
   color: #999;
+  text-indent: 6px;
+}
+#source:after {
+  position: absolute;
+  width: 0;
+  height: 0;
+  content: '';
+  top: 18px;
+  right: 5px;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #999;
+  border-left: 5px solid transparent;
 }
 .edit #results:before,
 .edit #results:after {
@@ -377,15 +392,15 @@ b {
 }
 .edit #results:after {
   top: 43px;
-  border-top: 20px solid #fff;
+  border-top: 11px solid #fff;
 }
 .edit #results:before {
   top: 44px;
-  border-top: 20px solid #e4e4e4;
+  border-top: 11px solid #e4e4e4;
 }
 #results {
   height: 322px;
-  margin-top: 18px;
+  margin-top: 16px;
   overflow: scroll;
 }
 .edit #head {
@@ -400,7 +415,7 @@ b {
 #mix-title {
   font-size: 30px;
   letter-spacing: -1px;
-  color: #ccc;
+  color: #333;
   padding-left: 10px;
   height: 38px;
   border: 1px solid #e4e4e4;
@@ -442,6 +457,9 @@ b {
   background: #fff;
   font-size: 16px;
   padding: 4px 13px;
+  text-align: center;
+  border: none;
+  width: 45px;
 }
 #video-track,
 #audio-track {
@@ -462,4 +480,80 @@ b {
 }
 #timeline .m-edit i {
   margin-right: 10px;
+}
+#results a {
+  font-size: 16px;
+  text-transform: none;
+  color: #999;
+}
+#results li {
+  height: 84px;
+}
+.clip {
+  float: left;
+  height: 74px;
+  margin-right: 10px;
+  overflow: hidden;
+  position: relative;
+}
+.clip img {
+  margin-top: -8px;
+
+}
+.clip .duration {
+  position: absolute;
+  background: #000;
+  padding: 3px;
+  bottom: 0;
+  right: 0;
+  color: #fff;
+  font: bold 11px Arial, sans-serif;
+}
+#results h2,
+#results p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#results h2 {
+  color: #333;
+  font-size: 20px;
+}
+#results p {
+  margin-top: 2px;
+}
+.baloon {
+  background: rgba(255, 51, 0, .9);
+  position: absolute;
+  z-index: 1;
+}
+.baloon a {
+  display: block;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 11px 17px;
+  border-top: 1px solid #ffa38c;
+}
+.baloon a:first-child {
+  border-top: none;
+}
+.baloon a i {
+  margin-right: 10px;
+}
+.baloon:after {
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  content: '';
+  top: -10px;
+  margin-left: -10px;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid rgba(255, 51, 0, .9);
+  border-left: 10px solid transparent;
+}
+#search .baloon {
+  top: 60px;
+  left: -44px;
 }
