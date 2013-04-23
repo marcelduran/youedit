@@ -51,17 +51,20 @@
 
     </div><!-- main -->
 
-    <div id="search" class="m-landing m-edit">
+    <div id="search" class="m-landing m-edit s-video">
       <form>
         <div class="m-edit">
-          <a id="source" class="icon-video" href="#source"></a>
+          <a class="source icon-video" href="#source"></a>
+          <a class="source icon-audio" href="#source"></a>
+          <a class="source icon-film" href="#source"></a>
           <div class="baloon">
-            <a href="#video"><i class="icon-video"></i>{{_video_}}</a>
-            <a href="#audio"><i class="icon-audio"></i>{{_sound_and_music_}}</a>
-            <a href="#mix"><i class="icon-film"></i>{{_used_in_this_mix_}}</a>
+            <a class="s-video" href="#video"><i class="icon-video"></i>{{_video_}}</a>
+            <a class="s-audio" href="#audio"><i class="icon-audio"></i>{{_sound_and_music_}}</a>
+            <a class="s-mix" href="#mix"><i class="icon-film"></i>{{_used_in_this_mix_}}</a>
           </div>
+          <label>{{_videos_and_music_}}</label>
         </div>
-        <input type="text" id="query">  
+        <input type="text" id="query" autocomplete="off">  
         <input id="mix" class="m-landing" type="submit" value="{{_mix_}}">
       </form>
       <div id="results" class="m-edit">
