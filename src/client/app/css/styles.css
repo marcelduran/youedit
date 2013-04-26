@@ -474,8 +474,11 @@ b {
 }
 #timeline .m-edit h2 {
   font-size: 18px;
-  display: table-cell;
+  display: none;
   vertical-align: middle;
+}
+#timeline .empty h2 {
+  display: table-cell;
 }
 #timeline .m-edit i {
   margin-right: 10px;
