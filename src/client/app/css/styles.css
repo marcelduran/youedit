@@ -112,6 +112,7 @@ b {
 #timeline {
   background-color: #000;
   padding: 4px 0;
+  overflow: auto;
 }
 #main {
   width: 530px;
@@ -345,7 +346,7 @@ b {
   /* left-hand side */
     /* head */
       .edit #head {
-        margin-bottom: 18px;  
+        margin-bottom: 18px;
       }
       .edit #head .m-edit {
         width: 400px;
@@ -592,17 +593,134 @@ b {
     #timeline .empty h2 {
       display: table-cell;
     }
+    #timeline .empty ul {
+      display: none;
+    }
     #timeline .m-edit i {
       margin-right: 10px;
     }
 
+    /* timemarks */
+      .timemarks {
+        position: relative;
+      }
+      .timemarks li {
+        display: inline-block;
+        position: absolute;
+        width: 30px;
+        margin-left: -15px;
+        text-align: center;
+        font: 10px Arial, sans-serif;
+      }
+      .timemarks li:first-child {
+        text-align: left;
+        margin-left: 0;
+      }
+      .timemarks li.last {
+        text-align: right;
+        margin-left: -30px;
+      }
+      .timemarks li.hidden {
+        display: none;
+      }
+
+    /* filmstrip */
+      .filmstrip ul {
+        height: 45px;
+      }
+      .filmstrip ul li {
+        position: relative;
+        float: left;
+        height: 45px;
+        min-width: 60px;
+        background-size: auto 55px;
+        background-position: 0 -5px;
+        cursor: -webkit-grab;
+      }
+      .filmstrip .ui-sortable-helper {
+        cursor: -webkit-grabbing;
+      }
+      .filmstrip ul li:before,
+      .filmstrip ul li:after {
+        position: absolute;
+        width: 0;
+        height: 0;
+        content: '';
+        right: -12px;
+        z-index: 1;
+        border-right: 12px solid transparent;
+        border-left: 12px solid transparent;
+      }
+      .filmstrip ul li:before {
+        top: 0;
+        border-top: 23px solid #000;
+      }
+      .filmstrip ul li:after {
+        bottom: 0;
+        border-bottom: 23px solid #000;
+      }
+      #video-track.filmstrip ul li:last-child:before,
+      #video-track.filmstrip ul li:last-child:after,
+      .filmstrip .ui-state-highlight:before,
+      .filmstrip .ui-state-highlight:after,
+      .filmstrip .ui-sortable-helper:before,
+      .filmstrip .ui-sortable-helper:after {
+        content: none;
+      }
+      .filmstrip .ui-state-highlight {
+        background: #fff;
+      }
+      .filmstrip li span {
+        color: #e9941f;
+        width: 100%;
+        display: inline-block;
+        text-align: center;
+        position: absolute;
+        font: 10px Arial, sans-serif;
+        top: -8px;
+        line-height: 0;
+      }
+      .filmstrip li span:before,
+      .filmstrip li span:after {
+        font-size: 15px;
+        vertical-align: middle;
+      }
+      .filmstrip li span:before {
+        content: '\21E4\20';
+      }
+      .filmstrip li span:after {
+        content: '\20\21E5';
+      }
+      .filmstrip .ui-state-highlight {
+        background: #000;
+        border: 5px dashed #fff;
+        height: 35px;
+        z-index: 1;
+      }
+
     /* video track */
       #video-track {
-        height: 121px;
+        padding: 25px 0 30px 0;
         border-bottom: 1px solid #242424;
       }
 
     /* audio track */
       #audio-track {
         height: 54px;
+        padding-top: 20px;
+      }
+      #audio-track.filmstrip ul li:before,
+      #audio-track.filmstrip ul li:after {
+        background:  url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAPCAMAAACyXj0lAAAAM1BMVEUAAAAAAgADBgEICwYOEAwSFBEWGBYaGxkdHx0hIiAlJyQrLCouMC0yNDE5OjhCQ0FPUU6XoFsXAAAAAXRSTlMAQObYZgAAALZJREFUGBkFwQlSw0AQBDB1zyYc/38oNsEVCrCRJs39b5K5kr4t9wwvl+Y1V29nJeSCpGdzVRok0pQuicAjXUqDFaKyvpRI4tnPJJpEftOmMkiE4cekUrJFo0kJ6FBrsY/EPXko4ZTEDN/WJpbcHB1Xc25I0qTwQUlDRppiSUY2IGPXYaLtwjHJtIBeOD9ZmzYHTHqlAEMhTAuOttkBPVhFWKtAdu8AJ1Js7CtAGYAnDgAAAAAA/4K+KzcfetI+AAAAAElFTkSuQmCC) repeat-x;
+        width: 100%;
+        right: auto;
+        border: none;
+        height: 21px;
+      }
+      #audio-track.filmstrip ul li:before {
+        top: 0;
+      }
+      #audio-track.filmstrip ul li:after {
+        bottom: 0;
+        -webkit-transform: rotate(180deg);
       }

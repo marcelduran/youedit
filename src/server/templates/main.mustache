@@ -19,7 +19,7 @@
         </div>
         <div class="m-edit">
           <form>
-            <input type="text" id="mix-title" placeholder="{{_mix_title_}}" maxlength="100">  
+            <input type="text" id="mix-title" placeholder="{{_mix_title_}}" maxlength="100">
             <input id="preview" type="submit" value="{{_preview_}}">
           </form>
         </div>
@@ -64,7 +64,7 @@
           </div>
           <label>{{_videos_and_music_}}</label>
         </div>
-        <input type="text" id="query" autocomplete="off">  
+        <input type="text" id="query" autocomplete="off">
         <input id="mix" class="m-landing" type="submit" value="{{_mix_}}">
       </form>
       <div id="results" class="m-edit">
@@ -100,11 +100,14 @@
         <h3 class="message">{{_&landing_message_}}</h3>
       </div>
       <div class="m-edit">
+        <ul class="timemarks"></ul>
         <div id="video-track" class="empty">
           <h2><i class="icon-video"></i>{{_&empty_video_timeline_}}</h2>
+          <ul></ul>
         </div>
         <div id="audio-track" class="empty">
           <h2><i class="icon-audio"></i>{{_&empty_audio_timeline_}}</h2>
+          <ul></ul>
         </div>
       </div>
     </div>
