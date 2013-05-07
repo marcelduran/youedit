@@ -2,7 +2,7 @@
   "name": "youedit",
   "version": "0.0.1",
   "dependencies": {
-    "flight": "~1.0.7",
+    "flight": "~1.0.8",
     "requirejs": "~2.1.5",
     "jasmine": "~1.3.1",
     "jasmine-jquery": "~1.4.2"

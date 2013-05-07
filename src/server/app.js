@@ -62,7 +62,7 @@ function render(locale, title) {
   var compiled = pages.watch[locale];
 
   if (!compiled) {
-    compiled = pages.watch[locale] = compileTemplate(locale, 'edit');
+    compiled = pages.watch[locale] = compileTemplate(locale, 'watch');
   }
 
   return compiled({

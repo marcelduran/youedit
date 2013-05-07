@@ -50,7 +50,7 @@ module.exports = function(grunt) {
       build: {
         options: {
           variables: {
-            cdn: 'http://localhost:8000'
+            cdn: ''
           }
         },
         files: [
