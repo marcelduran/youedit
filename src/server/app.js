@@ -49,7 +49,7 @@ function compileTemplate(locale, mode) {
     pages.main, ['{{_', '_}}'])(i18n[locale].t(locale));
 
   content = Mustache.compile(content, ['{{=', '=}}'])({
-    lang: locale.replace('_', '-'),
+    lang: locale.slice(0, 2),
     mode: mode,
     cdn: config.cdn
   });
