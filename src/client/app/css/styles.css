@@ -207,8 +207,8 @@ b {
     color: #666;
     border: none;
     padding: 0 3px;
-    display: inline-block;
     height: 42px;
+    float: left;
   }
 
   /* timeline */
@@ -219,8 +219,8 @@ b {
     font-size: 20px;
     color: #fff;
     border: none;
-    display: inline-block;
     margin-left: 1px;
+    float: right;
   }
   .landing .heading {
     font-size: 45px;
