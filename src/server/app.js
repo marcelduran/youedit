@@ -82,7 +82,7 @@ app.get('/', function(req, res) {
     landing = pages.landing[locale];
     if (!landing) {
       landing = pages.landing[locale] = compileTemplate(locale, 'landing')({
-        title: 'YouEd.it',
+        title: 'YouEd.it'
       });
     }
   }

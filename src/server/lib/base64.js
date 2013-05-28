@@ -1,3 +1,5 @@
+'use strict';
+
 var i, character, encoded,
     candidates = [];
 

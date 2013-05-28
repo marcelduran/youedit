@@ -2,9 +2,9 @@
   "name": "youedit",
   "version": "0.0.1",
   "dependencies": {
-    "express": "~3.1.0",
+    "express": "~3.1.2",
     "mustache": "~0.7.2",
-    "node-polyglot": "~0.2.0",
+    "node-polyglot": "~0.2.1",
     "locale": "0.0.9"
   },
   "devDependencies": {
@@ -14,7 +14,8 @@
     "grunt-forever": "~0.4.0",
     "grunt-contrib-jshint": "~0.4.3",
     "grunt-contrib-copy": "~0.4.1",
-    "grunt-replace": "~0.4.2"
+    "grunt-replace": "~0.4.2",
+    "grunt-contrib-requirejs": "~0.4.1"
   },
   "scripts": {
     "postinstall": "node_modules/bower/bin/bower install",

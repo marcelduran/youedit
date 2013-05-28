@@ -18,7 +18,10 @@ module.exports = function(grunt) {
         undef: true,
         unused: true,
         trailing: true,
-        node: true
+        node: true,
+        globals: {
+          define: true
+        }
       },
       files: ['Gruntfile.js', 'src/**/*.js']
     },
@@ -41,6 +44,21 @@ module.exports = function(grunt) {
             dest: 'build/public/',
             expand: true,
             cwd: 'src/client'
+          },
+          {
+            src: [
+              'jquery/jquery.js',
+              'requirejs/require.js'
+            ],
+            dest: 'build/public/js/',
+            expand: true,
+            cwd: 'components'
+          },
+          {
+            src: 'components/jquery-ui/ui/jquery-ui.js',
+            dest: 'build/public/js/jquery-ui/',
+            expand: true,
+            flatten: true
           }
         ]
       }
@@ -83,10 +101,22 @@ module.exports = function(grunt) {
       options: {
         index: 'build/app.js'
       }
+    },
+
+    requirejs: {
+      build: {
+        options: {
+          baseUrl: './',
+          name: 'src/client/app/main',
+          out: 'build/public/js/app.js',
+          optimize: 'none'
+        }
+      }
     }
 
   });
 
+  grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-replace');
@@ -96,7 +126,8 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['jshint']);
   grunt.registerTask('build', [
     'replace:build',
-    'copy:build'
+    'copy:build',
+    'requirejs:build'
   ]);
   grunt.registerTask('dev', ['forever:restart', 'regarde']);
 };

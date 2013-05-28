@@ -1,3 +1,5 @@
+'use strict';
+
 var url = require('url');
 
 var sample = 'http://youed.it/foo_fighters?v=SBjQ9tuuTJQ.4PkcfQtibmU&i=14!2G.33.~&o=1C!2N.39.45';
@@ -11,41 +13,42 @@ var reDoubleUnderscores = /\_\_/g,
     reYoutubeId = /[a-zA-Z0-9_\-]{11}/;
 
 // convert base 10 numbers into base 64
-// e.g.: 0 -> 0, 10 -> a, 61 -> Z, 62 -> -, 63 -> _ 
+// e.g.: 0 -> 0, 10 -> a, 61 -> Z, 62 -> -, 63 -> _
 function base10To64(n) {
   var r, c,
       q = n,
       result = '',
       code = String.fromCharCode;
-  
+
   if (n === 0) {
     return '0';
   }
-  
+
   while (q > 0) {
     r = q % 64;
     q = parseInt(q / 64, 10);
     c = code(r + (r < 10 ? 48 : r < 36 ? 55 : r < 62 ? 61 : r < 63 ? -17 : 32));
     result = c.toString() + result;
   }
-  
+
   return result;
 }
+console.log(base10To64(135));
 
 // convert base 64 numbers into base 10.
-// e.g.: 0 -> 0, a -> 10, Z -> 61, - -> 62, _ -> 63 
+// e.g.: 0 -> 0, a -> 10, Z -> 61, - -> 62, _ -> 63
 function base64To10(n) {
   var i, c, x,
       result = 0,
       len = n.length - 1,
       pow = Math.pow;
-  
+
   for (i = len; i >= 0; i -= 1) {
     c = n.charCodeAt(i);
     x = c - (c < 48 ? -17 : c < 65 ? 48 : c < 91 ? 55 : c < 96 ? 32 : 61);
     result += x * pow(64, len - i);
   }
-  
+
   return result;
 }
 
