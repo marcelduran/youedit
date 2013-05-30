@@ -15,9 +15,9 @@ define([
     });
 
     this.after('initialize', function() {
-      queryUI.attachTo(this.attr.querySelector);
       resultsData.attachTo(document);
       resultsUI.attachTo(this.attr.resultsSelector);
+      queryUI.attachTo(this.attr.querySelector);
     });
 
   }

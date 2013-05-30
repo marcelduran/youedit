@@ -19,6 +19,7 @@ module.exports = function(grunt) {
         unused: true,
         trailing: true,
         node: true,
+        jquery: true,
         globals: {
           define: true
         }
