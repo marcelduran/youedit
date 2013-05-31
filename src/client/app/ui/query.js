@@ -22,9 +22,12 @@ define(['components/flight/lib/component'], function(component) {
         }.bind(this),
         select: function(ev, ui) {
           $node.val(ui.item.title);
-          setTimeout($node.focus, 0);
+          setTimeout(function() {
+            $node.focus();
+          }, 0);
+          this.trigger('videoSelected', {item: ui.item});
           return false;
-        },
+        }.bind(this),
         open: function() {
           this.trigger('autocompleteOpen');
         }.bind(this)

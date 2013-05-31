@@ -72,6 +72,7 @@ define(['components/flight/lib/component'], function(component) {
 
     this.after('initialize', function() {
       this.on('newQuery', this.newQuery);
+      this.on('videoSelected', function(ev, data){console.log(arguments)});
     });
 
   }
