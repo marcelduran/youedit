@@ -5,13 +5,17 @@ define(['components/flight/lib/component'], function(component) {
   function query() {
     var $node;
 
+    this.defaultAttrs({
+      resultsSelector: '#results'
+    });
+
     this.init = function() {
       $node.autocomplete({
         minLength: 0,
         source: function(request, response) {
           this.trigger('newQuery', {request: request, response: response});
         }.bind(this),
-        appendTo: '#results',
+        appendTo: this.attr.resultsSelector,
         create: function() {
           $node.autocomplete().data('ui-autocomplete')._close = $.noop;
           this.trigger('autocompleteCreated');
