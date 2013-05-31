@@ -5,7 +5,7 @@
   <title>{{title}}</title>
   <link rel="stylesheet" href="{{=&cdn=}}/css/styles.css">
 </head>
-<body class="edit{{=imode=}}">
+<body class="{{=mode=}}">
 
   <div id="doc">
 
@@ -108,13 +108,16 @@
     </ul>
   </div><!-- footer -->
 
-  <!--script>
+  <script>
     (function(){
-      document.getElementById('query').addEventListener('keydown', function() {
+      function edit() {
+        document.getElementById('query')
+          .removeEventListener('keydown', edit, false);
         document.body.className = 'edit';
-      }, false);
+      }
+      document.getElementById('query').addEventListener('keydown', edit, false);
     }());
-  </script-->
+  </script>
 
   <script src="{{=&cdn=}}/js/jquery/jquery.js"></script>
   <script src="{{=&cdn=}}/js/jquery-ui/jquery-ui.js"></script>

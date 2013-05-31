@@ -457,6 +457,10 @@ b {
       background: rgba(255, 51, 0, .9);
       position: absolute;
       z-index: 1;
+      visibility: hidden;
+    }
+    .baloon.open {
+      visibility: visible;
     }
     .baloon a {
       display: block;
