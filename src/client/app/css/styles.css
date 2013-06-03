@@ -457,12 +457,14 @@ b {
       background: rgba(255, 51, 0, .9);
       position: absolute;
       z-index: 1;
+    }
+    #search .baloon {
       visibility: hidden;
     }
-    .baloon.open {
+    #search .baloon.open {
       visibility: visible;
     }
-    .baloon a {
+    #search .baloon a {
       display: block;
       color: #fff;
       font-size: 16px;
@@ -470,10 +472,10 @@ b {
       padding: 11px 17px;
       border-bottom: 1px solid #ffa38c;
     }
-    .baloon a:last-child {
+    #search .baloon a:last-child {
       border-bottom: none;
     }
-    .baloon a i {
+    #search .baloon a i {
       margin-right: 10px;
     }
     .baloon:after {
@@ -606,7 +608,7 @@ b {
     #results .ui-state-focus h2 {
       color: #f30;
     }
-    .ui-state-focus:before {
+    #results .ui-state-focus:before {
       position: absolute;
       left: -15px;
       width: 0;
@@ -629,34 +631,107 @@ b {
 
   /* track */
   #track {
+    position: relative;
+    background-repeat: repeat-x;
+    background-position: 0 -5px;
+    background-size: auto 55px;
     height: 45px;
-    display: relative;
-    background-color:orange;
-    width: 98%;
+    border: none;
+    border-radius: 0;
     margin: 0 auto 35px auto;
+    width: 98%;
   }
   .empty #track {
     display: none;
   }
-  .block:before {
-    content: '';
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
-    margin-right: -0.25em;
-  }
-  .centered {
-    display: inline-block;
-    vertical-align: middle;
-  }
-  #duration {
-    background: #fff;
-    font-size: 16px;
-    padding: 4px 13px;
-    text-align: center;
-    border: none;
-    width: 45px;
-  }
+    /* sliders */
+    .ui-slider-handle {
+      position: absolute;
+      height: 45px;
+      width: 8px;
+      cursor: ew-resize;
+      background: #f30;
+      z-index: 1;
+      margin-left: -4px;
+    }
+    .ui-slider-handle span {
+      position: absolute;
+      top: -19px;
+      width: 40px;
+      left: -16px;
+      text-align: center;
+    }
+
+    /* range */
+    #track .ui-slider-range {
+      position: absolute;
+      height: 100%;
+    }
+    .right-unused, 
+    .left-unused {
+      background: white;
+      height: 45px;
+      position: absolute;
+      opacity: .75;
+    }
+    .right-unused {
+      right: 0;
+    }
+
+    /* duration */
+    #track .duration {
+      border: none;
+      width: 50px;
+      font-size: 16px;
+      text-align: center;
+      position: absolute;
+      left: 50%;
+      margin-left: -25px;
+      top: 10px;
+      background: #f30;
+      color: #fff;
+      z-index: 1;
+    }
+
+    /* baloon */
+    #track .baloon {
+      color: #fff;
+      height: 33px;
+      position: absolute;
+      top: 46px;
+      width: 135px;
+      left: 50%;
+      margin-left: -68px;
+      font-size: 20px;
+    }
+    #track .baloon i {
+      display: inline-block;
+      width: 33px;
+      margin-top: 6px;
+    }
+    #track .baloon a {
+      width: 68px;
+      padding: 5px 0;
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      letter-spacing: -1px;
+      color: #fff;
+    }
+    #track .baloon .audio {
+      border-left: 1px solid #fe7865;
+      text-align: right;
+    }
+    #track .baloon .video {
+      border-right: 1px solid #fe7865;
+    }
+    #track.audio .baloon .audio {
+      display: inline-block;
+    }
+    #track .baloon .audio,
+    #track.audio .baloon .video {
+      display: none;
+    }
 
   /* timeline */
   #video-track,

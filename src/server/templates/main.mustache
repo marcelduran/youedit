@@ -72,8 +72,11 @@
 
   </div><!-- doc -->
 
-  <div id="track" class="m-edit block">
-    <input id="duration" class="centered" value="2:34">
+  <div id="track" class="m-edit">
+    <div class="left-unused"></div>
+    <a class="ui-slider-handle"><span id="mark-in"></span></a>
+    <a class="ui-slider-handle"><span id="mark-out"></span></a>
+    <div class="right-unused"></div>
   </div>
 
   <div id="timeline" class="m-landing m-edit">
@@ -113,8 +116,9 @@
       function edit() {
         document.getElementById('query')
           .removeEventListener('keydown', edit, false);
-        document.body.className = 'edit';
+        document.body.className = 'edit empty';
       }
+      document.getElementById('query').focus();
       document.getElementById('query').addEventListener('keydown', edit, false);
     }());
   </script>

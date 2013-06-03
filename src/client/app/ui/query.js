@@ -25,7 +25,7 @@ define(['components/flight/lib/component'], function(component) {
           setTimeout(function() {
             $node.focus();
           }, 0);
-          this.trigger('videoSelected', {item: ui.item});
+          this.trigger('videoSelected', {video: ui.item});
           return false;
         }.bind(this),
         open: function() {
