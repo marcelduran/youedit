@@ -60,6 +60,18 @@ module.exports = function(grunt) {
             dest: 'build/public/js/jquery-ui/',
             expand: true,
             flatten: true
+          },
+          {
+            src: 'app/**/*.js',
+            dest: 'build/public/js/',
+            expand: true,
+            cwd: 'src/client/'
+          },
+          {
+            src: 'flight/**/*.js',
+            dest: 'build/public/js/',
+            expand: true,
+            cwd: 'components/'
           }
         ]
       }
@@ -127,8 +139,8 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['jshint']);
   grunt.registerTask('build', [
     'replace:build',
-    'copy:build',
-    'requirejs:build'
+    'copy:build'
+    //'requirejs:build'
   ]);
   grunt.registerTask('dev', ['forever:restart', 'regarde']);
 };

@@ -1,6 +1,6 @@
 'use strict';
 
-define(['components/flight/lib/component'], function(component) {
+define(['flight/lib/component'], function(component) {
 
   function results() {
     var $node, $innerEl, innerHeight, outerHeight, more, scrollTimeout,

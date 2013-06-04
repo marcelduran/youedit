@@ -1,6 +1,6 @@
 'use strict';
 
-define(['components/flight/lib/component'], function(component) {
+define(['flight/lib/component'], function(component) {
 
   function search() {
     var start, term, response;

@@ -1,10 +1,10 @@
 'use strict';
 
 define([
-  'components/flight/lib/component',
-  'src/client/app/ui/query',
-  'src/client/app/data/results',
-  'src/client/app/ui/results'
+  'flight/lib/component',
+  'ui/query',
+  'data/results',
+  'ui/results'
 ], function(component, queryUI, resultsData, resultsUI) {
 
   function search() {
