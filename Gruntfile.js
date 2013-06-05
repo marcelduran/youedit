@@ -101,18 +101,28 @@ module.exports = function(grunt) {
       }
     },
 
-    regarde: {
-      server: {
-        files: [
-          'src/**/*.*'
-        ],
-        tasks: ['forever:restart']
+    nodemon: {
+      build: {
+        options: {
+          file: 'build/app.js',
+          watchedExtensions: ['js', 'mustache', 'css']
+        }
       }
     },
 
-    forever: {
-      options: {
-        index: 'build/app.js'
+    watch: {
+      all: {
+        files: ['src/**/*.js', 'src/**/*.css', 'src/**/*.mustache'],
+        tasks: ['build']
+      }
+    },
+
+    concurrent: {
+      build: {
+        tasks: ['nodemon', 'watch'],
+        options: {
+          logConcurrentOutput: true
+        }
       }
     },
 
@@ -133,8 +143,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-replace');
-  grunt.loadNpmTasks('grunt-regarde');
-  grunt.loadNpmTasks('grunt-forever');
+  grunt.loadNpmTasks('grunt-nodemon');
+  grunt.loadNpmTasks('grunt-concurrent');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('test', ['jshint']);
   grunt.registerTask('build', [
@@ -142,5 +153,5 @@ module.exports = function(grunt) {
     'copy:build'
     //'requirejs:build'
   ]);
-  grunt.registerTask('dev', ['forever:restart', 'regarde']);
+  grunt.registerTask('dev', ['concurrent']);
 };
