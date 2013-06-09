@@ -1,6 +1,6 @@
 'use strict';
 
-define(['flight/lib/component'], function(component) {
+define(['flight/lib/component', 'mixins/time'], function(component, time) {
 
   function results() {
     var $node, $innerEl, innerHeight, outerHeight, more, scrollTimeout,
@@ -17,15 +17,23 @@ define(['flight/lib/component'], function(component) {
           '</a>' +
           '</li>';
 
-    function t(data) {
+    this.template = function(data) {
       var text = template;
 
       Object.keys(data).forEach(function(key) {
-        text = text.replace(new RegExp('{{' + key + '}}', 'g'), data[key]);
-      });
+        var str;
+
+        if (key === 'duration') {
+          str = this.prettyTime(data[key]);
+        } else {
+          str = data[key];
+        }
+
+        text = text.replace(new RegExp('{{' + key + '}}', 'g'), str);
+      }.bind(this));
 
       return text;
-    }
+    };
 
     this.defaultAttrs({
       fetchingClass: 'ui-state-fetching',
@@ -86,7 +94,8 @@ define(['flight/lib/component'], function(component) {
     };
 
     this.render = function(ev, data) {
-      $(t(data.item)).appendTo(data.ul).data('ui-autocomplete-item', data.item);
+      $(this.template(data.item)).appendTo(data.ul).
+        data('ui-autocomplete-item', data.item);
     };
 
     this.fetching = function() {
@@ -120,7 +129,6 @@ define(['flight/lib/component'], function(component) {
 
   }
 
-  return component(results);
+  return component(results, time);
 
 });
-

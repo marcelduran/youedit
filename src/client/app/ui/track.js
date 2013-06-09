@@ -1,6 +1,6 @@
 'use strict';
 
-define(['flight/lib/component'], function(component) {
+define(['flight/lib/component', 'mixins/time'], function(component, time) {
 
   function track() {
     var $node, $duration, $markin, $markout, $left, $right,
@@ -24,9 +24,9 @@ define(['flight/lib/component'], function(component) {
           min = values[0],
           max = values[1];
 
-      $markin.text(min);
-      $markout.text(max);
-      $duration.val(max - min);
+      $markin.text(this.prettyTime(min));
+      $markout.text(this.prettyTime(max));
+      $duration.val(this.prettyTime(max - min));
       $left.css('width', parseFloat(rangeStyle.left, 10) + '%');
       $right.css('width', (100 - (parseFloat(rangeStyle.left, 10) +
         parseFloat(rangeStyle.width, 10))) + '%');
@@ -45,7 +45,7 @@ define(['flight/lib/component'], function(component) {
       }
     }
 
-    this.init = function() {
+    this.initializeSlider = function() {
       $node = this.$node;
       $markin = $node.find('#mark-in');
       $markout = $node.find('#mark-out');
@@ -57,8 +57,8 @@ define(['flight/lib/component'], function(component) {
         min: 0,
         max: 1,
         values: [0, 1],
-        slide: update,
-        change: update,
+        slide: update.bind(this),
+        change: update.bind(this),
         create: function() {
           var $range = $node.find('.ui-slider-range');
 
@@ -73,18 +73,18 @@ define(['flight/lib/component'], function(component) {
 
           $range.find('i').on('mouseover', setSource);
 
-          update(null, {values: $node.slider('values')});
+          //update(null, {values: $node.slider('values')});
         }
       });
     };
 
     this.after('initialize', function() {
-      this.init();
+      this.initializeSlider();
       this.on(document, 'videoSelected', this.setVideo);
     });
 
   }
 
-  return component(track);
+  return component(track, time);
 
 });
