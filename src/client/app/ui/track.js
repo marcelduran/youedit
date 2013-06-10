@@ -33,8 +33,10 @@ define(['flight/lib/component', 'mixins/time'], function(component, time) {
     }
 
     function updateDuration() {
-      var min = $node.slider('values', 0);
-      $node.slider('values', 1, min + parseInt($duration.val(), 10));
+      var min = $node.slider('values', 0),
+          value = this.timeToSec($duration.val());
+
+      $node.slider('values', 1, min + value);
     }
 
     function setSource(ev) {
@@ -43,6 +45,21 @@ define(['flight/lib/component', 'mixins/time'], function(component, time) {
       } else {
         $node.removeClass('audio');
       }
+    }
+
+    function sliderCreated() {
+      var $range = $node.find('.ui-slider-range');
+
+      rangeStyle = $range[0].style;
+      $range.append('<input class="duration"><div class="baloon">' +
+        '<i class="icon-video"></i><a class="video" href="#">' +
+        'add video</a><a class="audio" href="#">add audio</a>' +
+        '<i class="icon-audio"></i></div>');
+
+      $duration = $range.find('.duration');
+      $duration.on('change', updateDuration.bind(this));
+
+      $range.find('i').on('mouseover', setSource);
     }
 
     this.initializeSlider = function() {
@@ -59,22 +76,7 @@ define(['flight/lib/component', 'mixins/time'], function(component, time) {
         values: [0, 1],
         slide: update.bind(this),
         change: update.bind(this),
-        create: function() {
-          var $range = $node.find('.ui-slider-range');
-
-          rangeStyle = $range[0].style;
-          $range.append('<input class="duration"><div class="baloon">' +
-            '<i class="icon-video"></i><a class="video" href="#">' +
-            'add video</a><a class="audio" href="#">add audio</a>' +
-            '<i class="icon-audio"></i></div>');
-
-          $duration = $range.find('.duration');
-          $duration.on('change', updateDuration);
-
-          $range.find('i').on('mouseover', setSource);
-
-          //update(null, {values: $node.slider('values')});
-        }
+        create: sliderCreated.bind(this)
       });
     };
 
