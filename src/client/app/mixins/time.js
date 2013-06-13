@@ -30,7 +30,7 @@ define([], function() {
           m = parseInt(match[2], 10) || 0,
           s = parseInt(match[3], 10) || 0;
 
-      return (h * 3600) + (m * 60) + s; 
+      return (h * 3600) + (m * 60) + s;
     };
 
   }

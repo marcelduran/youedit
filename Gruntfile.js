@@ -21,7 +21,8 @@ module.exports = function(grunt) {
         node: true,
         jquery: true,
         globals: {
-          define: true
+          define: true,
+          requirejs: true
         }
       },
       files: ['Gruntfile.js', 'src/**/*.js']
@@ -120,7 +121,7 @@ module.exports = function(grunt) {
 
     watch: {
       all: {
-        files: ['src/**/*.js', 'src/**/*.css', 'src/**/*.mustache'],
+        files: ['Gruntfile.js', 'src/**/*.js', 'src/**/*.css', 'src/**/*.mustache'],
         tasks: ['build']
       }
     },
