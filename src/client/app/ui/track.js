@@ -1,6 +1,6 @@
 'use strict';
 
-define(['flight/lib/component', 'mixins/time'], function(component, time) {
+define(['flight/lib/component', 'mixins/time', 'jqueryui/slider'], function(component, time) {
 
   function track() {
     var $node, $duration, $markin, $markout, $left, $right,

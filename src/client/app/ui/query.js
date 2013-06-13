@@ -1,6 +1,6 @@
 'use strict';
 
-define(['flight/lib/component'], function(component) {
+define(['flight/lib/component', 'jqueryui/autocomplete'], function(component) {
 
   function query() {
     var $node;

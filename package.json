@@ -16,10 +16,14 @@
     "grunt-contrib-requirejs": "~0.4.1",
     "grunt-nodemon": "0.0.4",
     "grunt-concurrent": "~0.2.0",
-    "grunt-contrib-watch": "~0.4.4"
+    "grunt-contrib-watch": "~0.4.4",
+    "jqueryui-amd": "0.0.2"
   },
   "scripts": {
-    "postinstall": "node_modules/bower/bin/bower install",
+    "postinstall": [
+      "node_modules/bower/bin/bower install",
+      "node_modules/jqueryui-amd/jqueryui-amd.js components/jquery-ui"
+    ],
     "start": "node app.js"
   }
 }

@@ -56,12 +56,6 @@ module.exports = function(grunt) {
             cwd: 'components'
           },
           {
-            src: 'components/jquery-ui/ui/jquery-ui.js',
-            dest: 'build/public/js/jquery-ui/',
-            expand: true,
-            flatten: true
-          },
-          {
             src: 'app/**/*.js',
             dest: 'build/public/js/',
             expand: true,
@@ -72,6 +66,20 @@ module.exports = function(grunt) {
             dest: 'build/public/js/',
             expand: true,
             cwd: 'components/'
+          },
+          {
+            src: [
+              'core.js',
+              'widget.js',
+              'position.js',
+              'menu.js',
+              'autocomplete.js',
+              'mouse.js',
+              'slider.js'
+            ],
+            dest: 'build/public/js/jqueryui',
+            expand: true,
+            cwd: 'components/jquery-ui/jqueryui/'
           }
         ]
       }
