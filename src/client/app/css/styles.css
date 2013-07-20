@@ -681,7 +681,7 @@ b {
     /* duration */
     #track .duration {
       border: none;
-      width: 50px;
+      width: 60px;
       font-size: 16px;
       text-align: center;
       position: absolute;
@@ -695,6 +695,7 @@ b {
 
     /* baloon */
     #track .baloon {
+      background: #f30;
       color: #fff;
       height: 33px;
       position: absolute;
@@ -704,33 +705,37 @@ b {
       margin-left: -68px;
       font-size: 20px;
     }
+    #track .baloon .actions {
+      position: relative;
+    }
     #track .baloon i {
-      display: inline-block;
-      width: 33px;
-      margin-top: 6px;
+      width: 30px;
+      margin-top: 2px;
     }
     #track .baloon a {
-      width: 68px;
       padding: 5px 0;
-      display: inline-block;
+      position: absolute;
       white-space: nowrap;
       overflow: hidden;
       letter-spacing: -1px;
       color: #fff;
-    }
-    #track .baloon .audio {
-      border-left: 1px solid #fe7865;
-      text-align: right;
+      background: #f30;
     }
     #track .baloon .video {
       border-right: 1px solid #fe7865;
+      left: 0;
+      text-align: left;
+      padding-left: 6px;
+      width: 98px;
+      z-index: 1;
+      transition: width .5s;
     }
-    #track.audio .baloon .audio {
-      display: inline-block;
+    #track .baloon .audio {
+      right: 0;
     }
-    #track .baloon .audio,
     #track.audio .baloon .video {
-      display: none;
+      width: 30px;
+      transition: width .5s;
     }
 
   /* timeline */

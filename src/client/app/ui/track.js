@@ -4,10 +4,12 @@ define(['flight/lib/component', 'mixins/time', 'jqueryui/slider'], function(comp
 
   function track() {
     var $node, $duration, $markin, $markout, $left, $right,
-        video, rangeStyle;
+        video, rangeStyle, slider, mouseCapture, sourceTimeout;
 
     this.defaultAttrs({
-      emptyClass: 'empty'
+      emptyClass: 'empty',
+      audioClass: 'audio',
+      audioLinkSelector: 'a.audio'
     });
 
     this.setVideo = function(ev, data) {
@@ -40,11 +42,34 @@ define(['flight/lib/component', 'mixins/time', 'jqueryui/slider'], function(comp
     }
 
     function setSource(ev) {
-      if ($(ev.target).hasClass('icon-audio')) {
-        $node.addClass('audio');
+      sourceTimeout = setTimeout(function(ev) {
+        if ($(ev.target).parents().addBack().is(this.attr.audioLinkSelector)) {
+          $node.addClass(this.attr.audioClass);
+        } else {
+          $node.removeClass(this.attr.audioClass);
+        }
+      }.bind(this, ev), 300);
+    }
+
+    function addTrack(ev) {
+      var values = $node.slider('values');
+        track = {
+          from: values[0],
+          to: values[1],
+          video: video
+        };
+
+      ev.preventDefault();
+
+      if ($(ev.target).parents().addBack().is(this.attr.audioLinkSelector)) {
+        this.trigger('audioTrackSelected', track);
       } else {
-        $node.removeClass('audio');
+        this.trigger('videoTrackSelected', track);
       }
+    }
+
+    function unsetSourceTimeout() {
+      clearTimeout(sourceTimeout);
     }
 
     function sliderCreated() {
@@ -52,14 +77,25 @@ define(['flight/lib/component', 'mixins/time', 'jqueryui/slider'], function(comp
 
       rangeStyle = $range[0].style;
       $range.append('<input class="duration"><div class="baloon">' +
-        '<i class="icon-video"></i><a class="video" href="#">' +
-        'add video</a><a class="audio" href="#">add audio</a>' +
-        '<i class="icon-audio"></i></div>');
+        '<div class="actions">' +
+        '<a class="video" href="#"><i class="icon-video"></i>' +
+        'add video</a><a class="audio" href="#">add audio' +
+        '<i class="icon-audio"></i></a></div></div>');
 
       $duration = $range.find('.duration');
       $duration.on('change', updateDuration.bind(this));
 
-      $range.find('i').on('mouseover', setSource);
+      $range.find('a')
+        .on('mouseover', setSource.bind(this))
+        .on('mouseout', unsetSourceTimeout)
+        .on('click', addTrack.bind(this));
+    }
+
+    // prevent baloon click to move handlers
+    function preCapture(ev) {
+      if (!$(ev.target).parents().addBack().is('.baloon')) {
+        return mouseCapture.call(this, ev);
+      }
     }
 
     this.initializeSlider = function() {
@@ -69,7 +105,7 @@ define(['flight/lib/component', 'mixins/time', 'jqueryui/slider'], function(comp
       $left = $node.find('.left-unused');
       $right = $node.find('.right-unused');
 
-      $node.slider({
+      slider = $node.slider({
         range: true,
         min: 0,
         max: 1,
@@ -77,7 +113,11 @@ define(['flight/lib/component', 'mixins/time', 'jqueryui/slider'], function(comp
         slide: update.bind(this),
         change: update.bind(this),
         create: sliderCreated.bind(this)
-      });
+      }).data('ui-slider');
+
+      // hijack slide handlers click
+      mouseCapture = slider._mouseCapture;
+      slider._mouseCapture = preCapture;
     };
 
     this.after('initialize', function() {
