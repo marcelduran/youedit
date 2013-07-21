@@ -1,10 +1,11 @@
 {
   "port": 8000,
   "templates": {
-    "main": "./templates/main.mustache"
+    "page": "./templates/page.mustache"
   },
   "paths": {
-    "i18n": "./i18n"
+    "i18n": "./i18n",
+    "partials": "./templates/partials"
   },
   "cdn": "@@cdn"
 }

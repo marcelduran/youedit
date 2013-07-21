@@ -1,4 +1,4 @@
-/* Copyright (c) 2013, Marcel Duran & Guilherme Neumann */
+/* Copyright (c) 2013, YouEdit */
 
 'use strict';
 
@@ -10,17 +10,30 @@ var express = require('express'),
     path = require('path'),
     config = require('./config/config.json');
 
-// load main page template
-var filename = path.join(__dirname, config.templates.main);
+// load page template
+var filename = path.join(__dirname, config.templates.page);
 var pages = {
   main: fs.readFileSync(filename, 'utf8'),
   landing: {},
   watch: {}
 };
 
-// load i18n
-var dir = path.join(__dirname, config.paths.i18n);
+// load partials
+var dir = path.join(__dirname, config.paths.partials);
 var files = fs.readdirSync(dir);
+var partials = {
+  base: {}
+};
+files.forEach(function eachFile(file) {
+  if (path.extname(file) === '.mustache') {
+    var name = path.basename(file, '.mustache');
+    partials.base[name] = fs.readFileSync(path.join(dir, file), 'utf8');
+  }
+});
+
+// load i18n
+dir = path.join(__dirname, config.paths.i18n);
+files = fs.readdirSync(dir);
 var i18n = {
   supported: []
 };
@@ -44,17 +57,35 @@ app.use(express.logger());
 app.use(locale(i18n.supported));
 app.use(express.static(path.resolve(__dirname, './public/')));
 
-function compileTemplate(locale, mode) {
-  var content = Mustache.compile(
-    pages.main, ['{{_', '_}}'])(i18n[locale].t(locale));
+function preCompile(template, locale, view) {
+  var compiled, content;
 
-  content = Mustache.compile(content, ['{{=', '=}}'])({
+  //// i18n
+  compiled = Mustache.compile(template, ['{{_', '_}}']);
+  content = compiled(i18n[locale].t(locale));
+
+  // static
+  // dummy _ to bust mustache cache, removed afterwards
+  compiled = Mustache.compile('_' + content, ['{{=', '=}}']);
+  content = compiled(view).slice(1);
+
+  return content;
+}
+
+function compileTemplate(locale, mode) {
+  var view = {
     lang: locale.slice(0, 2),
     mode: mode,
     cdn: config.cdn
+  };
+
+  // precompile partials
+  partials[locale] = {};
+  Object.keys(partials.base).forEach(function(name) {
+    partials[locale][name] = preCompile(partials.base[name], locale, view);
   });
 
-  return Mustache.compile(content);
+  return Mustache.compile(preCompile(pages.main, locale, view));
 }
 
 // render watch page
@@ -68,7 +99,7 @@ function render(locale, title) {
   return compiled({
     title: title,
     mixTitle: title
-  });
+  }, partials[locale]);
 }
 
 // landing page
@@ -83,7 +114,7 @@ app.get('/', function(req, res) {
     if (!landing) {
       landing = pages.landing[locale] = compileTemplate(locale, 'landing')({
         title: 'YouEd.it'
-      });
+      }, partials[locale]);
     }
   }
 
@@ -96,4 +127,4 @@ app.get('/:title', function(req, res) {
 });
 
 app.listen(config.port);
-console.log('app listening on port ' + config.port);
+console.log('app listening on port %s', config.port);

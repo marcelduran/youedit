@@ -34,7 +34,7 @@ module.exports = function(grunt) {
           {
             src: [
               'app.js',
-              'templates/*',
+              'templates/**/*',
               'i18n/*.json'
             ],
             dest: 'build/',
