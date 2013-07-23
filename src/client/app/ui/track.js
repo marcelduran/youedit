@@ -52,7 +52,8 @@ define(['flight/lib/component', 'mixins/time', 'jqueryui/slider'], function(comp
     }
 
     function addTrack(ev) {
-      var values = $node.slider('values');
+      var eventName,
+        values = $node.slider('values'),
         track = {
           from: values[0],
           to: values[1],
@@ -62,10 +63,11 @@ define(['flight/lib/component', 'mixins/time', 'jqueryui/slider'], function(comp
       ev.preventDefault();
 
       if ($(ev.target).parents().addBack().is(this.attr.audioLinkSelector)) {
-        this.trigger('audioTrackSelected', track);
+        eventName = 'audioTrackSelected';
       } else {
-        this.trigger('videoTrackSelected', track);
+        eventName = 'videoTrackSelected';
       }
+      this.trigger(eventName, track);
     }
 
     function unsetSourceTimeout() {

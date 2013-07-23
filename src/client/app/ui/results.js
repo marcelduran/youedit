@@ -7,7 +7,7 @@ define(['flight/lib/component', 'mixins/time'], function(component, time) {
         template = '<li class="ui-menu-item">' +
           '<a>' +
           '<span class="clip">' +
-          '<img src="http://i{{shard}}.ytimg.com/vi/{{id}}/default.jpg">' +
+          '<img src="//i{{shard}}.ytimg.com/vi/{{id}}/default.jpg">' +
           '<span class="duration">{{duration}}</span>' +
           '</span>' +
           '<h2 title="{{title}}">{{title}}</h2>' +
