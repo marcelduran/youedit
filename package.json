@@ -17,7 +17,8 @@
     "grunt-nodemon": "0.0.4",
     "grunt-concurrent": "~0.2.0",
     "grunt-contrib-watch": "~0.4.4",
-    "jqueryui-amd": "0.0.2"
+    "jqueryui-amd": "0.0.2",
+    "grunt-contrib-clean": "~0.5.0"
   },
   "scripts": {
     "postinstall": [
