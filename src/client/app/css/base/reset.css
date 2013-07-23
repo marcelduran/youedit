@@ -1,0 +1,17 @@
+/* Copyright (c) 2013, YouEdit */
+
+/* adapted from Erik Meyer's http://meyerweb.com/eric/tools/css/reset */
+html, body, div, span, object, iframe, h1, h2, h3, b, p, a, img, ins, ol, ul, li, form, label, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+body {
+  line-height: 1;
+}
+ol, ul {
+  list-style: none;
+}

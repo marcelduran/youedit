@@ -1,0 +1,21 @@
+/* Copyright (c) 2013, YouEdit */
+
+#video-track,
+#audio-track {
+  display: table;
+  width: 100%;
+}
+#timeline .m-edit h2 {
+  font-size: 18px;
+  display: none;
+  vertical-align: middle;
+}
+#timeline .empty h2 {
+  display: table-cell;
+}
+#timeline .empty ul {
+  display: none;
+}
+#timeline .m-edit i {
+  margin-right: 10px;
+}

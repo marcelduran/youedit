@@ -1,0 +1,18 @@
+/* Copyright (c) 2013, YouEdit */
+
+.landing #main {
+  width: auto;
+  float: none;
+}
+.landing .logo {
+  font-size: 120px;
+  letter-spacing: -2px;
+  float: none;
+}
+.landing #head {
+  padding: 45px 0;
+  text-align: center;
+}
+.landing #video {
+  display: none;
+}

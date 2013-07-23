@@ -63,6 +63,12 @@ module.exports = function(grunt) {
             cwd: 'src/client/'
           },
           {
+            src: 'css/**/*.css',
+            dest: 'build/public/',
+            expand: true,
+            cwd: 'src/client/app/'
+          },
+          {
             src: 'flight/**/*.js',
             dest: 'build/public/js/',
             expand: true,
@@ -76,7 +82,8 @@ module.exports = function(grunt) {
               'menu.js',
               'autocomplete.js',
               'mouse.js',
-              'slider.js'
+              'slider.js',
+              'sortable.js'
             ],
             dest: 'build/public/js/jqueryui',
             expand: true,
@@ -101,7 +108,7 @@ module.exports = function(grunt) {
             flatten: true
           },
           {
-            src: 'css/*.css',
+            src: 'css/**/*.css',
             dest: 'build/public/',
             expand: true,
             cwd: 'src/client/app/'
@@ -144,6 +151,10 @@ module.exports = function(grunt) {
           optimize: 'none'
         }
       }
+    },
+
+    clean: {
+      build: ['build/**']
     }
 
   });
@@ -155,11 +166,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-nodemon');
   grunt.loadNpmTasks('grunt-concurrent');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-clean');
 
   grunt.registerTask('test', ['jshint']);
   grunt.registerTask('build', [
-    'replace:build',
-    'copy:build'
+    'copy:build',
+    'replace:build'
     //'requirejs:build'
   ]);
   grunt.registerTask('dev', ['concurrent']);

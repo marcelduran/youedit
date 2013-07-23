@@ -1,0 +1,29 @@
+/* Copyright (c) 2013, YouEdit */
+
+.edit #head {
+  margin-bottom: 18px;
+  height: 42px;
+}
+.edit #head .m-edit {
+  width: 400px;
+  float: right;
+}
+#mix-title {
+  font-size: 30px;
+  letter-spacing: -1px;
+  color: #333;
+  padding-left: 10px;
+  height: 38px;
+  border: 1px solid #e4e4e4;
+  width: 255px;
+  float: left;
+}
+#preview {
+  font-size: 20px;
+  width: 120px;
+  height: 42px;
+  border: none;
+  background: #999;
+  color: #fff;
+  float: right;
+}

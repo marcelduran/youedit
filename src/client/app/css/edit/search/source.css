@@ -1,0 +1,71 @@
+/* Copyright (c) 2013, YouEdit */
+
+.baloon {
+  background: rgba(255, 51, 0, .9);
+  position: absolute;
+  z-index: 1;
+}
+#search .baloon {
+  visibility: hidden;
+}
+#search .baloon.open {
+  visibility: visible;
+}
+#search .baloon a {
+  display: block;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 11px 17px;
+  border-bottom: 1px solid #ffa38c;
+}
+#search .baloon a:last-child {
+  border-bottom: none;
+}
+#search .baloon a i {
+  margin-right: 10px;
+}
+.baloon:after {
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  content: '';
+  top: -10px;
+  margin-left: -10px;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid rgba(255, 51, 0, .9);
+  border-left: 10px solid transparent;
+}
+#search .baloon {
+  top: 60px;
+  left: -29px;
+}
+.source,
+.s-video .s-video,
+.s-audio .s-audio,
+.s-mix .s-mix,
+.m-edit label {
+  display: none;
+}
+.s-video .source.icon-video,
+.s-audio .source.icon-audio,
+.s-mix .source.icon-film,
+.s-mix .m-edit label {
+  display: block;
+}
+.s-mix #query {
+  background-color: #f4f4f4;
+}
+.s-mix #results:after {
+  border-top-color: #f4f4f4;
+}
+.m-edit label {
+  position: absolute;
+  font-size: 20px;
+  z-index: 1;
+  top: 8px;
+  left: 58px;
+  background: #f4f4f4;
+  padding: 6px;
+}

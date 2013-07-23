@@ -1,0 +1,14 @@
+/* Copyright (c) 2013, YouEdit */
+
+#footer {
+  margin: 42px 0 33px 0;
+}
+#footer p {
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+#footer li {
+  font-size: 13px;
+  display: inline-block;
+  margin: 0 7px;
+}

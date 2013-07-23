@@ -1,0 +1,18 @@
+/* Copyright (c) 2013, YouEdit */
+
+.ui-slider-handle {
+  position: absolute;
+  height: 45px;
+  width: 8px;
+  cursor: ew-resize;
+  background: #f30;
+  z-index: 1;
+  margin-left: -4px;
+}
+.ui-slider-handle span {
+  position: absolute;
+  top: -19px;
+  width: 40px;
+  left: -16px;
+  text-align: center;
+}

@@ -1,0 +1,41 @@
+/* Copyright (c) 2013, YouEdit */
+
+.watch #share {
+  display: none;
+}
+.watch.new #share {
+  display: table;
+}
+#share {
+  background: #f30;
+  color: #fff;
+  height: 127px;
+  width: 574px;
+  position: relative;
+  margin: -220px auto 0 auto;
+}
+#share .heading {
+  font-size: 45px;
+}
+#share .message {
+  font-size: 24px;
+  font-weight: bold;
+}
+#share .close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #fff;
+}
+#share:after {
+  position: absolute;
+  left: 15%;
+  width: 0;
+  height: 0;
+  content: '';
+  bottom: -20px;
+  margin-left: -20px;
+  border-right: 20px solid transparent;
+  border-top: 20px solid #f30;
+  border-left: 20px solid transparent;
+}

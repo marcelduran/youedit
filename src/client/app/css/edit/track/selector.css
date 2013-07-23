@@ -1,0 +1,45 @@
+/* Copyright (c) 2013, YouEdit */
+
+#track .baloon {
+  background: #f30;
+  color: #fff;
+  height: 33px;
+  position: absolute;
+  top: 46px;
+  width: 135px;
+  left: 50%;
+  margin-left: -68px;
+  font-size: 20px;
+}
+#track .baloon .actions {
+  position: relative;
+}
+#track .baloon i {
+  width: 30px;
+  margin-top: 2px;
+}
+#track .baloon a {
+  padding: 5px 0;
+  position: absolute;
+  white-space: nowrap;
+  overflow: hidden;
+  letter-spacing: -1px;
+  color: #fff;
+  background: #f30;
+}
+#track .baloon .video {
+  border-right: 1px solid #fe7865;
+  left: 0;
+  text-align: left;
+  padding-left: 6px;
+  width: 98px;
+  z-index: 1;
+  transition: width .5s;
+}
+#track .baloon .audio {
+  right: 0;
+}
+#track.audio .baloon .video {
+  width: 30px;
+  transition: width .5s;
+}

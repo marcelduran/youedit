@@ -1,0 +1,37 @@
+/* Copyright (c) 2013, YouEdit */
+
+/* font awesome styles */
+[class^="icon-"],
+[class*=" icon-"] {
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased;
+
+  /* sprites.less reset */
+  display: inline;
+  width: auto;
+  height: auto;
+  line-height: normal;
+  vertical-align: baseline;
+  background-image: none;
+  background-position: 0% 0%;
+  background-repeat: repeat;
+  margin-top: 0;
+}
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  text-decoration: inherit;
+  display: inline-block;
+  speak: none;
+}
+a [class^="icon-"],
+a [class*=" icon-"] {
+  display: inline-block;
+}
+.icon-film:before	{ content: "\f021"; }
+.icon-close:before { content: "\f022"; }
+.icon-audio:before { content: "\f023"; }
+.icon-video:before { content: "\f024"; }
+.icon-link:before { content: "\f025"; }

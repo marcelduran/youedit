@@ -1,0 +1,10 @@
+/* Copyright (c) 2013, YouEdit */
+
+.edit .m-edit {
+  display: block;
+}
+.edit #doc {
+  height: 382px;
+  width: 945px;
+  margin: 18px auto 45px auto;
+}

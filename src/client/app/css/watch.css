@@ -1,0 +1,46 @@
+/* Copyright (c) 2013, YouEdit */
+
+/* general */
+.watch .m-watch {
+  display: block;
+}
+.watch #doc,
+.preview #doc {
+  background-color: #1f1f1f;
+}
+
+/* left-hand side */
+.watch #main {
+  width: 640px;
+  float: none;
+  margin: 0 auto;
+}
+.watch #head {
+  color: #fff;
+  padding: 25px 0;
+  height: 42px;
+}
+.watch #head .m-watch {
+  color: #666;
+  display: inline-block;
+  width: 510px;
+  float: right;
+}
+.watch #head h2 {
+  float: left;
+  width: 410px;
+  height: 42px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.watch #head a {
+  font-size: 20px;
+  width: 100px;
+  background: #f30;
+  color: #fff;
+  padding: 11px 0;
+  display: inline-block;
+  text-align: center;
+  float: right;
+}

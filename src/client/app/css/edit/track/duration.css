@@ -1,0 +1,15 @@
+/* Copyright (c) 2013, YouEdit */
+
+#track .duration {
+  border: none;
+  width: 60px;
+  font-size: 16px;
+  text-align: center;
+  position: absolute;
+  left: 50%;
+  margin-left: -25px;
+  top: 10px;
+  background: #f30;
+  color: #fff;
+  z-index: 1;
+}

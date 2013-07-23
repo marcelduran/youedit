@@ -1,0 +1,15 @@
+/* Copyright (c) 2013, YouEdit */
+
+.edit #video {
+  height: 322px;
+  background: #f30;
+  color: #fff;
+  display: table;
+  width: 100%;
+}
+#video .heading {
+  font-size: 70px;
+}
+#video .message {
+  font-size: 24px;
+}

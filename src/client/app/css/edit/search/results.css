@@ -1,0 +1,72 @@
+/* Copyright (c) 2013, YouEdit */
+
+#results:before,
+#results:after {
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  content: '';
+  margin-left: -20px;
+  border-right: 20px solid transparent;
+  border-left: 20px solid transparent;
+}
+#results:after {
+  top: 43px;
+  border-top: 11px solid #fff;
+}
+#results:before {
+  top: 44px;
+  border-top: 11px solid #e4e4e4;
+}
+#results {
+  height: 322px;
+  margin-top: 16px;
+  padding-left: 15px;
+  overflow: auto;
+}
+#results a {
+  font-size: 16px;
+  text-transform: none;
+  color: #999;
+  display: block;
+  cursor: pointer;
+  position: relative;
+}
+#results li {
+  height: 84px;
+}
+.clip {
+  float: left;
+  height: 74px;
+  margin-right: 10px;
+  overflow: hidden;
+  position: relative;
+}
+.clip img {
+  margin-top: -8px;
+  width: 120px;
+  height: 90px;
+}
+.clip .duration {
+  position: absolute;
+  background: #000;
+  padding: 3px;
+  bottom: 0;
+  right: 0;
+  color: #fff;
+  font: bold 11px Arial, sans-serif;
+}
+#results h2,
+#results p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#results h2 {
+  color: #333;
+  font-size: 20px;
+}
+#results p {
+  margin-top: 2px;
+}

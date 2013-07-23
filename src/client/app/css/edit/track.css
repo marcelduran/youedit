@@ -1,0 +1,16 @@
+/* Copyright (c) 2013, YouEdit */
+
+#track {
+  position: relative;
+  background-repeat: repeat-x;
+  background-position: 0 -5px;
+  background-size: auto 55px;
+  height: 45px;
+  border: none;
+  border-radius: 0;
+  margin: 0 auto 35px auto;
+  width: 98%;
+}
+.empty #track {
+  display: none;
+}

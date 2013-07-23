@@ -1,0 +1,21 @@
+/* Copyright (c) 2013, YouEdit */
+
+#audio-track {
+  height: 54px;
+  padding-top: 20px;
+}
+#audio-track.filmstrip ul li:before,
+#audio-track.filmstrip ul li:after {
+  background:  url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAPCAMAAACyXj0lAAAAM1BMVEUAAAAAAgADBgEICwYOEAwSFBEWGBYaGxkdHx0hIiAlJyQrLCouMC0yNDE5OjhCQ0FPUU6XoFsXAAAAAXRSTlMAQObYZgAAALZJREFUGBkFwQlSw0AQBDB1zyYc/38oNsEVCrCRJs39b5K5kr4t9wwvl+Y1V29nJeSCpGdzVRok0pQuicAjXUqDFaKyvpRI4tnPJJpEftOmMkiE4cekUrJFo0kJ6FBrsY/EPXko4ZTEDN/WJpbcHB1Xc25I0qTwQUlDRppiSUY2IGPXYaLtwjHJtIBeOD9ZmzYHTHqlAEMhTAuOttkBPVhFWKtAdu8AJ1Js7CtAGYAnDgAAAAAA/4K+KzcfetI+AAAAAElFTkSuQmCC) repeat-x;
+  width: 100%;
+  right: auto;
+  border: none;
+  height: 21px;
+}
+#audio-track.filmstrip ul li:before {
+  top: 0;
+}
+#audio-track.filmstrip ul li:after {
+  bottom: 0;
+  -webkit-transform: rotate(180deg);
+}

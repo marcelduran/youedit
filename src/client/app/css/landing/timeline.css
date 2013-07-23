@@ -1,0 +1,20 @@
+/* Copyright (c) 2013, YouEdit */
+
+.landing #mix {
+  width: 100px;
+  height: 42px;
+  background-color: #f30;
+  font-size: 20px;
+  color: #fff;
+  border: none;
+  margin-left: 1px;
+  float: right;
+}
+.landing .heading {
+  font-size: 45px;
+  margin-top: 33px;
+}
+.landing .message {
+  font-size: 24px;
+  margin-bottom: 108px;
+}

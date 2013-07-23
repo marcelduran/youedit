@@ -1,0 +1,18 @@
+/* Copyright (c) 2013, YouEdit */
+
+.landing #search {
+  position: absolute;
+  height: 42px;
+  width: 305px;
+  top: 360px;
+  left: 50%;
+  margin-left: -150px;
+}
+.landing #query {
+  width: 195px;
+  color: #666;
+  border: none;
+  padding: 0 3px;
+  height: 42px;
+  float: left;
+}
