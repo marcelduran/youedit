@@ -64,7 +64,7 @@ define(['flight/lib/component'], function(component) {
           title: item.title.$t,
           author: item.author[0].name.$t,
           pub: new Date(item.published.$t),
-          views: ((stats && parseInt(stats.viewCount, 10)) || 0).toLocaleString(10),
+          views: (stats && parseInt(stats.viewCount, 10)) || 0,
           shard: shard || ''
         };
       }));

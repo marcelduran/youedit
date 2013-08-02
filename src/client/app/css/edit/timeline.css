@@ -12,6 +12,7 @@
 }
 #timeline .empty h2 {
   display: table-cell;
+  padding: 27px 0;
 }
 #timeline .empty ul {
   display: none;

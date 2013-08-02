@@ -15,9 +15,10 @@
   text-align: left;
   margin-left: 0;
 }
-.timemarks li.last {
-  text-align: right;
-  margin-left: -30px;
+.timemarks li:last-child {
+  left: auto !important;
+  right: 0;
+  width: auto;
 }
 .timemarks li.hidden {
   display: none;

@@ -1,10 +1,14 @@
 'use strict';
 
-define(['flight/lib/component', 'mixins/time'], function(component, time) {
+define([
+  'flight/lib/component',
+  'mixins/time',
+  'mixins/template',
+], function(component, time, template) {
 
   function results() {
     var $node, $innerEl, innerHeight, outerHeight, more, scrollTimeout,
-        template = '<li class="ui-menu-item">' +
+        tmpl = '<li class="ui-menu-item">' +
           '<a>' +
           '<span class="clip">' +
           '<img src="//i{{shard}}.ytimg.com/vi/{{id}}/default.jpg">' +
@@ -16,24 +20,6 @@ define(['flight/lib/component', 'mixins/time'], function(component, time) {
           '<p>{{pub}}</p>' +
           '</a>' +
           '</li>';
-
-    this.template = function(data) {
-      var text = template;
-
-      Object.keys(data).forEach(function(key) {
-        var str;
-
-        if (key === 'duration') {
-          str = this.prettyTime(data[key]);
-        } else {
-          str = data[key];
-        }
-
-        text = text.replace(new RegExp('{{' + key + '}}', 'g'), str);
-      }.bind(this));
-
-      return text;
-    };
 
     this.defaultAttrs({
       fetchingClass: 'ui-state-fetching',
@@ -94,7 +80,18 @@ define(['flight/lib/component', 'mixins/time'], function(component, time) {
     };
 
     this.render = function(ev, data) {
-      $(this.template(data.item)).appendTo(data.ul).
+      var video = data.item,
+          view = {
+            shard: video.shard,
+            id: video.id,
+            duration: this.prettyTime(video.duration),
+            title: video.title,
+            author: video.author,
+            views: video.views.toLocaleString(10),
+            pub: video.pub.toLocaleString()
+          };
+
+      $(this.template(tmpl, view)).appendTo(data.ul).
         data('ui-autocomplete-item', data.item);
     };
 
@@ -129,6 +126,6 @@ define(['flight/lib/component', 'mixins/time'], function(component, time) {
 
   }
 
-  return component(results, time);
+  return component(results, time, template);
 
 });

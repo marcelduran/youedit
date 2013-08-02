@@ -2,11 +2,11 @@
   (function(doc){
     var el = doc.getElementById('query');
     function edit() {
-      el.removeEventListener('keydown', edit, false);
+      el.removeEventListener('input', edit, false);
       document.body.className = 'edit empty';
     }
     el.focus();
-    el.addEventListener('keydown', edit, false);
+    el.addEventListener('input', edit, false);
   }(document));
 </script>
 
