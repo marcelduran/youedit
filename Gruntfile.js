@@ -10,16 +10,17 @@ module.exports = function(grunt) {
     jshint: {
       options: {
         browser: true,
-        eqeqeq: true,
         curly: true,
-        validthis: true,
+        eqeqeq: true,
+        evil: true,
         globalstrict: true,
         indent: 2,
+        jquery: true,
+        node: true,
         undef: true,
         unused: true,
         trailing: true,
-        node: true,
-        jquery: true,
+        validthis: true,
         globals: {
           define: true,
           requirejs: true
