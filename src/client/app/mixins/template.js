@@ -8,14 +8,6 @@ define([], function() {
         reOpenTag = /\{\{/g,
         reCloseTag = /\}\}/g;
 
-    function value(key, data) {
-      var obj = data;
-      key.split('.').forEach(function(key) {
-        obj = obj[key];
-      });
-      return obj;
-    }
-
     this.template = function(tmpl, data) {
       var render = cache[tmpl];
 
@@ -28,7 +20,7 @@ define([], function() {
       }
 
       return render(data);
-    }
+    };
 
   }
 
