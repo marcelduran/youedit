@@ -5,18 +5,21 @@ define([
 ], function(component, time, template) {
 
   function timeline() {
-    var video, audio, $timemarks;
+    var video, audio, winWidth, $timemarks, $container,
+        contSize = 1;
     var tmpl = '<li style="background-image:url(//i{{shard}}.ytimg.com/vi/{{id}}/default.jpg)"><span>{{duration}}</span></li>';
 
     this.defaultAttrs({
       filmstripSelector: '.filmstrip ul',
       framesSelector: '.filmstrip ul li',
-      highlightClass: 'ui-state-highlight',
       videoTrackSelector: '#video-track',
       audioTrackSelector: '#audio-track',
       videoStripSelector: '#video-track ul',
       audioStripSelector: '#audio-track ul',
-      timemarksSelector: '.timemarks'
+      timemarksSelector: '.timemarks',
+      containerSelector: '.container',
+      highlightClass: 'ui-state-highlight',
+      emptyClass: 'empty'
     });
 
     this.init = function() {
@@ -29,17 +32,20 @@ define([
         $list: this.$node.find(this.attr.audioStripSelector)
       };
       $timemarks = this.$node.find(this.attr.timemarksSelector);
+      $container = this.$node.find(this.attr.containerSelector);
 
       this.$node.find(this.attr.filmstripSelector).sortable({
         placeholder: this.attr.highlightClass,
         axis: 'x'
       }).disableSelection();
+
+      winWidth = $(window).width();
     };
 
-    this.timemarks = function(duration) {
+    this.timemarks = function(duration, multiplier) {
       var marksTmpl = '<li style="left:{{pos}}%">{{time}}</li>';
-      var marksLength = 11;
-      var i, el, perc, pos, time, max, factor,
+      var marksLength = 11 * multiplier;
+      var i, perc, pos, time, max, factor,
           existingMarks = $timemarks.find('li'),
           existingCount = existingMarks.length;
 
@@ -68,10 +74,29 @@ define([
     };
 
     this.update = function(frames, total) {
-      frames.css('width', function() {
-        return ($(this).data('duration') / total * 100) + '%';
-      });
-      this.timemarks(total);
+      var i, len, perc, minWidth, $frame,
+          minPerc = Infinity;
+
+      // set all frames new width
+      for (i = 0, len = frames.length; i < len; i++) {
+        $frame = $(frames[i]);
+        perc = $frame.data('duration') / total;
+
+        if (perc < minPerc) {
+          minPerc = perc;
+        }
+
+        $frame.width((perc * 100) + '%');
+      }
+
+      // adjust container scroll size
+      minWidth = minPerc * winWidth * contSize;
+      if (minWidth < 60) {
+        contSize = Math.ceil((60 / minPerc) / winWidth);
+        $container.width((contSize * 100) + '%');
+      }
+
+      this.timemarks(total, contSize);
     };
 
     this.addTrack = function(track, ev, data) {
@@ -92,7 +117,7 @@ define([
         this.$node.find(this.attr.framesSelector) : track.$list.find('li');
 
       this.update(frames, data.total);
-      track.$node.removeClass('empty');
+      track.$node.removeClass(this.attr.emptyClass);
     };
 
     this.after('initialize', function() {
