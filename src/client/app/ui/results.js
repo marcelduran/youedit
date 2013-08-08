@@ -3,7 +3,7 @@
 define([
   'flight/lib/component',
   'mixins/time',
-  'mixins/template',
+  'mixins/template'
 ], function(component, time, template) {
 
   function results() {
@@ -80,16 +80,18 @@ define([
     };
 
     this.render = function(ev, data) {
-      var video = data.item,
-          view = {
-            shard: video.shard,
-            id: video.id,
-            duration: this.prettyTime(video.duration),
-            title: video.title,
-            author: video.author,
-            views: video.views.toLocaleString(10),
-            pub: video.pub.toLocaleString()
-          };
+      var view,
+          video = data.item;
+
+      view = {
+        shard: video.shard,
+        id: video.id,
+        duration: this.prettyTime(video.duration),
+        title: video.title,
+        author: video.author,
+        views: video.views.toLocaleString(10),
+        pub: video.pub.toLocaleString()
+      };
 
       $(this.template(tmpl, view)).appendTo(data.ul).
         data('ui-autocomplete-item', data.item);
