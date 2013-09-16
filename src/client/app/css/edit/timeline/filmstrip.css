@@ -67,3 +67,13 @@
   top: -5px;
   z-index: 1;
 }
+.filmstrip li a.remove {
+  background: #f30;
+  color: #fff;
+  margin-left: 2px;
+  padding: 2px 4px;
+  visibility: hidden;
+}
+.filmstrip li.tools a.remove {
+  visibility: visible;
+}

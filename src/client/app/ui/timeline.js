@@ -7,7 +7,7 @@ define([
   function timeline() {
     var video, audio, winWidth, $timemarks, $container,
         contSize = 1;
-    var tmpl = '<li style="background-image:url(//i{{shard}}.ytimg.com/vi/{{id}}/default.jpg)"><span>{{duration}}</span></li>';
+    var tmpl = '<li style="background-image:url(//i{{shard}}.ytimg.com/vi/{{id}}/default.jpg)"><span>{{duration}}</span><a class="remove icon-close" href="#remove"></a></li>';
 
     this.defaultAttrs({
       filmstripSelector: '.filmstrip ul',
@@ -19,7 +19,8 @@ define([
       timemarksSelector: '.timemarks',
       containerSelector: '.container',
       highlightClass: 'ui-state-highlight',
-      emptyClass: 'empty'
+      emptyClass: 'empty',
+      toolsClass: 'tools'
     });
 
     this.init = function() {
@@ -120,10 +121,28 @@ define([
       track.$node.removeClass(this.attr.emptyClass);
     };
 
+    this.showTools = function(ev) {
+      $(ev.target).addClass(this.attr.toolsClass);
+    };
+
+    this.hideTools = function(ev) {
+      var $target = $(ev.target);
+
+      //if ($target.parents(this.attr.framesSelector)) {
+      //  return;
+      //}
+      console.log($target, ev);
+      $target.removeClass(this.attr.toolsClass);
+    };
+
     this.after('initialize', function() {
       this.init();
       this.on('videoTrackAdded', this.addTrack.bind(this, video));
       this.on('audioTrackAdded', this.addTrack.bind(this, audio));
+      this.$node.on('mouseover', this.attr.framesSelector,
+        this.showTools.bind(this));
+      this.$node.on('mouseout', this.attr.framesSelector,
+        this.hideTools.bind(this));
     });
 
   }
