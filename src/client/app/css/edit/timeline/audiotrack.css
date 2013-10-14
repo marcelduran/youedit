@@ -6,6 +6,7 @@
   width: 100%;
   border: none;
   height: 21px;
+  z-index: 0;
 }
 #audio-track.filmstrip ul li:before {
   top: 0;

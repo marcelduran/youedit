@@ -18,9 +18,9 @@ define([
       audioStripSelector: '#audio-track ul',
       timemarksSelector: '.timemarks',
       containerSelector: '.container',
+      removeSelector: '.remove',
       highlightClass: 'ui-state-highlight',
-      emptyClass: 'empty',
-      toolsClass: 'tools'
+      emptyClass: 'empty'
     });
 
     this.init = function() {
@@ -121,28 +121,16 @@ define([
       track.$node.removeClass(this.attr.emptyClass);
     };
 
-    this.showTools = function(ev) {
-      $(ev.target).addClass(this.attr.toolsClass);
-    };
-
-    this.hideTools = function(ev) {
-      var $target = $(ev.target);
-
-      //if ($target.parents(this.attr.framesSelector)) {
-      //  return;
-      //}
-      console.log($target, ev);
-      $target.removeClass(this.attr.toolsClass);
+    this.removeTrack = function(ev) {
+      $(ev.target).parents('li').remove();
     };
 
     this.after('initialize', function() {
       this.init();
       this.on('videoTrackAdded', this.addTrack.bind(this, video));
       this.on('audioTrackAdded', this.addTrack.bind(this, audio));
-      this.$node.on('mouseover', this.attr.framesSelector,
-        this.showTools.bind(this));
-      this.$node.on('mouseout', this.attr.framesSelector,
-        this.hideTools.bind(this));
+      this.$node.on('click', this.attr.removeSelector,
+        this.removeTrack.bind(this));
     });
 
   }
