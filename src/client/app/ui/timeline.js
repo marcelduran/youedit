@@ -26,8 +26,14 @@ define([
 
     this.total = 0;
     this.eventMap = {
-      'video-track': 'videoTrackRemoved',
-      'audio-track': 'audioTrackRemoved'
+      'video-track': {
+        'removed': 'videoTrackRemoved',
+        'moved': 'videoTrackMoved'
+      },
+      'audio-track': {
+        'removed': 'audioTrackRemoved',
+        'moved': 'audioTrackMoved'
+      }
     };
 
     this.init = function() {
@@ -44,10 +50,37 @@ define([
 
       this.$node.find(this.attr.filmstripSelector).sortable({
         placeholder: this.attr.highlightClass,
-        axis: 'x'
+        axis: 'x',
+        start: this.moveFrameStart.bind(this),
+        stop: this.moveFrameStop.bind(this)
       }).disableSelection();
 
       winWidth = $(window).width();
+    };
+
+    this.moveFrameStart = function(ev, ui) {
+      this.movingFrameIndex = ui.item.index();
+    };
+
+    this.moveFrameStop = function(ev, ui) {
+      var index, eventName,
+          $frame, $trackNode;
+
+      $frame = ui.item;
+      index = $frame.index();
+
+      if (index === this.movingFrameIndex) {
+        return;
+      }
+
+      $trackNode = $frame.parents(this.attr.trackSelector);
+      eventName = this.eventMap[$trackNode.attr('id')].moved;
+      this.trigger(eventName, {
+        index: {
+          previous: this.movingFrameIndex,
+          current: index
+        }
+      });
     };
 
     this.setTimemarks = function(duration, multiplier) {
@@ -153,7 +186,7 @@ define([
       index = $frame.index();
       $frame.remove();
 
-      eventName = this.eventMap[$trackNode.attr('id')];
+      eventName = this.eventMap[$trackNode.attr('id')].removed;
       this.trigger(eventName, {index: index});
 
       frames = this.$node.find(this.attr.framesSelector);

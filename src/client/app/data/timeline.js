@@ -3,17 +3,22 @@
 define(['flight/lib/component'], function(component) {
 
   function timeline() {
-    var video, audio;
 
-    video = {
+    this.video = {
       list: [],
       duration: 0,
-      addEventName: 'videoTrackAdded'
+      eventNames: {
+        add: 'videoTrackAdded',
+        update: 'videoTrackUpdated'
+      }
     };
-    audio = {
+    this.audio = {
       list: [],
       duration: 0,
-      addEventName: 'audioTrackAdded'
+      eventNames: {
+        add: 'audioTrackAdded',
+        update: 'audioTrackUpdated'
+      }
     };
 
     this.defaultAttrs({
@@ -26,17 +31,19 @@ define(['flight/lib/component'], function(component) {
 
       duration = data.to - data.from;
       track.duration += duration;
-      total = Math.max(video.duration, audio.duration);
+      total = Math.max(this.video.duration, this.audio.duration);
 
       trackData = {
         id: data.video.id,
         shard: data.video.shard,
         duration: duration,
         total: total,
-        larger: track.duration === total && audio.duration && video.duration
+        larger: track.duration === total &&
+          this.audio.duration && this.video.duration
       };
 
-      this.trigger(track.addEventName, trackData);
+      this.trigger(track.eventNames.add, trackData);
+      this.trigger(track.eventNames.update, track.list);
     };
 
     this.removeTrack = function(track, ev, data) {
@@ -45,17 +52,34 @@ define(['flight/lib/component'], function(component) {
       removed = track.list.splice(data.index, 1)[0];
       duration = removed.to - removed.from;
       track.duration -= duration;
+
+      this.trigger(track.eventNames.update, track.list);
+    };
+
+    this.moveTrack = function(track, ev, data) {
+      var index, item;
+
+      index = data.index;
+      item = track.list[index.previous];
+      track.list[index.previous] = track.list[index.current]
+      track.list[index.current] = item;
+
+      this.trigger(track.eventNames.update, track.list);
     };
 
     this.after('initialize', function() {
       this.on(document, 'videoTrackSelected',
-        this.addTrack.bind(this, video));
+        this.addTrack.bind(this, this.video));
       this.on(document, 'audioTrackSelected',
-        this.addTrack.bind(this, audio));
+        this.addTrack.bind(this, this.audio));
       this.on(document, 'videoTrackRemoved',
-        this.removeTrack.bind(this, video));
+        this.removeTrack.bind(this, this.video));
       this.on(document, 'audioTrackRemoved',
-        this.removeTrack.bind(this, audio));
+        this.removeTrack.bind(this, this.audio));
+      this.on(document, 'videoTrackMoved',
+        this.moveTrack.bind(this, this.video));
+      this.on(document, 'audioTrackMoved',
+        this.moveTrack.bind(this, this.audio));
     });
 
   }
