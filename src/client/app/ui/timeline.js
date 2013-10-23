@@ -5,13 +5,14 @@ define([
 ], function(component, time, template) {
 
   function timeline() {
-    var video, audio, winWidth, $timemarks, $container,
+    var video, audio, winWidth, $container,
         contSize = 1;
     var tmpl = '<li style="background-image:url(//i{{shard}}.ytimg.com/vi/{{id}}/default.jpg)"><span>{{duration}}</span><a class="remove icon-close" href="#remove"></a></li>';
 
     this.defaultAttrs({
       filmstripSelector: '.filmstrip ul',
       framesSelector: '.filmstrip ul li',
+      trackSelector: '.filmstrip',
       videoTrackSelector: '#video-track',
       audioTrackSelector: '#audio-track',
       videoStripSelector: '#video-track ul',
@@ -23,6 +24,12 @@ define([
       emptyClass: 'empty'
     });
 
+    this.total = 0;
+    this.eventMap = {
+      'video-track': 'videoTrackRemoved',
+      'audio-track': 'audioTrackRemoved'
+    };
+
     this.init = function() {
       video = {
         $node: this.$node.find(this.attr.videoTrackSelector),
@@ -32,7 +39,7 @@ define([
         $node: this.$node.find(this.attr.audioTrackSelector),
         $list: this.$node.find(this.attr.audioStripSelector)
       };
-      $timemarks = this.$node.find(this.attr.timemarksSelector);
+      this.$timemarks = this.$node.find(this.attr.timemarksSelector);
       $container = this.$node.find(this.attr.containerSelector);
 
       this.$node.find(this.attr.filmstripSelector).sortable({
@@ -43,12 +50,18 @@ define([
       winWidth = $(window).width();
     };
 
-    this.timemarks = function(duration, multiplier) {
+    this.setTimemarks = function(duration, multiplier) {
       var marksTmpl = '<li style="left:{{pos}}%">{{time}}</li>';
       var marksLength = 11 * multiplier;
       var i, perc, pos, time, max, factor,
-          existingMarks = $timemarks.find('li'),
+          existingMarks = this.$timemarks.find('li'),
           existingCount = existingMarks.length;
+
+      if (duration <= 0) {
+        this.$timemarks.addClass(this.attr.emptyClass);
+      } else {
+        this.$timemarks.removeClass(this.attr.emptyClass);
+      }
 
       // fine tuning
       factor = Math.min(marksLength,
@@ -69,19 +82,20 @@ define([
         if (i < existingCount) {
           $(existingMarks[i]).text(time).css('left', pos + '%');
         } else {
-          $timemarks.append(this.template(marksTmpl, {pos: pos, time: time}));
+          this.$timemarks.append(
+            this.template(marksTmpl, {pos: pos, time: time}));
         }
       }
     };
 
-    this.update = function(frames, total) {
+    this.update = function(frames, $trackNode) {
       var i, len, perc, minWidth, $frame,
           minPerc = Infinity;
 
       // set all frames new width
       for (i = 0, len = frames.length; i < len; i++) {
         $frame = $(frames[i]);
-        perc = $frame.data('duration') / total;
+        perc = $frame.data('duration') / this.total;
 
         if (perc < minPerc) {
           minPerc = perc;
@@ -97,7 +111,13 @@ define([
         $container.width((contSize * 100) + '%');
       }
 
-      this.timemarks(total, contSize);
+      this.setTimemarks(this.total, contSize);
+
+      if (len > 0) {
+        $trackNode.removeClass(this.attr.emptyClass);
+      } else {
+        $trackNode.addClass(this.attr.emptyClass);
+      }
     };
 
     this.addTrack = function(track, ev, data) {
@@ -117,12 +137,27 @@ define([
       frames = data.larger ?
         this.$node.find(this.attr.framesSelector) : track.$list.find('li');
 
-      this.update(frames, data.total);
-      track.$node.removeClass(this.attr.emptyClass);
+      this.total = data.total;
+
+      this.update(frames, track.$node);
     };
 
     this.removeTrack = function(ev) {
-      $(ev.target).parents('li').remove();
+      var $frame, $trackNode, frames, eventName, index;
+
+      $frame = $(ev.target).parents('li');
+      $trackNode = $frame.parents(this.attr.trackSelector);
+
+      this.total -= $frame.data('duration');
+
+      index = $frame.index();
+      $frame.remove();
+
+      eventName = this.eventMap[$trackNode.attr('id')];
+      this.trigger(eventName, {index: index});
+
+      frames = this.$node.find(this.attr.framesSelector);
+      this.update(frames, $trackNode);
     };
 
     this.after('initialize', function() {

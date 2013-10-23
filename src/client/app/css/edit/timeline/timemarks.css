@@ -23,3 +23,6 @@
 .timemarks li.hidden {
   display: none;
 }
+.timemarks.empty {
+  visibility: hidden;
+}

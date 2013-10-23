@@ -39,9 +39,23 @@ define(['flight/lib/component'], function(component) {
       this.trigger(track.addEventName, trackData);
     };
 
+    this.removeTrack = function(track, ev, data) {
+      var removed, duration;
+
+      removed = track.list.splice(data.index, 1)[0];
+      duration = removed.to - removed.from;
+      track.duration -= duration;
+    };
+
     this.after('initialize', function() {
-      this.on(document, 'videoTrackSelected', this.addTrack.bind(this, video));
-      this.on(document, 'audioTrackSelected', this.addTrack.bind(this, audio));
+      this.on(document, 'videoTrackSelected',
+        this.addTrack.bind(this, video));
+      this.on(document, 'audioTrackSelected',
+        this.addTrack.bind(this, audio));
+      this.on(document, 'videoTrackRemoved',
+        this.removeTrack.bind(this, video));
+      this.on(document, 'audioTrackRemoved',
+        this.removeTrack.bind(this, audio));
     });
 
   }
