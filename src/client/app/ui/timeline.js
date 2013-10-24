@@ -20,8 +20,12 @@ define([
       timemarksSelector: '.timemarks',
       containerSelector: '.container',
       removeSelector: '.remove',
+
       highlightClass: 'ui-state-highlight',
-      emptyClass: 'empty'
+      emptyClass: 'empty',
+      hiddenClass: 'hidden',
+
+      marksPerPage: 11
     });
 
     this.total = 0;
@@ -83,12 +87,15 @@ define([
       });
     };
 
-    this.setTimemarks = function(duration, multiplier) {
+    this.setTimemarks = function(duration) {
       var marksTmpl = '<li style="left:{{pos}}%">{{time}}</li>';
-      var marksLength = 11 * multiplier;
       var i, perc, pos, time, max, factor,
-          existingMarks = this.$timemarks.find('li'),
-          existingCount = existingMarks.length;
+          marksLength, marksBound, existingMarks, existingBound;
+
+      marksLength = this.attr.marksPerPage * contSize;
+      marksBound = marksLength - 1;
+      existingMarks = this.$timemarks.find('li');
+      existingBound = existingMarks.length - 1;
 
       if (duration <= 0) {
         this.$timemarks.addClass(this.attr.emptyClass);
@@ -107,17 +114,28 @@ define([
       }
 
       for (i = 0; i < marksLength; i++) {
-        perc = i / (marksLength - 1);
+        perc = i / marksBound;
         pos = perc * 100;
         time = this.prettyTime(
           perc === 1 ? max : Math.round(max * perc / factor) * factor);
 
-        if (i < existingCount) {
-          $(existingMarks[i]).text(time).css('left', pos + '%');
+        if (i <= existingBound) {
+          // reuse existing nodes, forcing last to be used
+          $(existingMarks[i === marksBound ? existingBound : i])
+            .text(time)
+            .css('left', pos + '%')
+            .removeClass(this.attr.hiddenClass);
         } else {
+          // create new nodes
           this.$timemarks.append(
             this.template(marksTmpl, {pos: pos, time: time}));
         }
+      }
+
+      // hide unused nodes, but last one
+      i = marksBound;
+      while (i < existingBound) {
+        $(existingMarks[i++]).addClass(this.attr.hiddenClass);
       }
     };
 
@@ -141,8 +159,10 @@ define([
       minWidth = minPerc * winWidth * contSize;
       if (minWidth < 60) {
         contSize = Math.ceil((60 / minPerc) / winWidth);
-        $container.width((contSize * 100) + '%');
+      } else {
+        contSize = 1;
       }
+      $container.width((contSize * 100) + '%');
 
       this.setTimemarks(this.total, contSize);
 
@@ -177,6 +197,8 @@ define([
 
     this.removeTrack = function(ev) {
       var $frame, $trackNode, frames, eventName, index;
+
+      ev.preventDefault();
 
       $frame = $(ev.target).parents('li');
       $trackNode = $frame.parents(this.attr.trackSelector);

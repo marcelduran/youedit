@@ -87,7 +87,7 @@ define([
         shard: video.shard,
         id: video.id,
         duration: this.prettyTime(video.duration),
-        title: video.title,
+        title: video.title.replace(/"/g, '&quot;'),
         author: video.author,
         views: video.views.toLocaleString(10),
         pub: video.pub.toLocaleString()

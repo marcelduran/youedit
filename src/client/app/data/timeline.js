@@ -10,6 +10,11 @@ define(['flight/lib/component'], function(component) {
       eventNames: {
         add: 'videoTrackAdded',
         update: 'videoTrackUpdated'
+      },
+      keys: {
+        id: 'v',
+        markIn: 'i',
+        markOut: 'o'
       }
     };
     this.audio = {
@@ -18,6 +23,11 @@ define(['flight/lib/component'], function(component) {
       eventNames: {
         add: 'audioTrackAdded',
         update: 'audioTrackUpdated'
+      },
+      keys: {
+        id: 'a',
+        markIn: 'b',
+        markOut: 'e'
       }
     };
 
@@ -43,7 +53,7 @@ define(['flight/lib/component'], function(component) {
       };
 
       this.trigger(track.eventNames.add, trackData);
-      this.trigger(track.eventNames.update, track.list);
+      this.update(track);
     };
 
     this.removeTrack = function(track, ev, data) {
@@ -53,7 +63,7 @@ define(['flight/lib/component'], function(component) {
       duration = removed.to - removed.from;
       track.duration -= duration;
 
-      this.trigger(track.eventNames.update, track.list);
+      this.update(track);
     };
 
     this.moveTrack = function(track, ev, data) {
@@ -64,8 +74,15 @@ define(['flight/lib/component'], function(component) {
       track.list[index.previous] = track.list[index.current]
       track.list[index.current] = item;
 
-      this.trigger(track.eventNames.update, track.list);
+      this.update(track);
     };
+
+    this.update = function(track) {
+      this.trigger(track.eventNames.update, {
+        list: track.list,
+        keys: track.keys
+      });
+    }
 
     this.after('initialize', function() {
       this.on(document, 'videoTrackSelected',
