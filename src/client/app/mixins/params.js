@@ -50,18 +50,22 @@ define(['mixins/encoding'], function(encoding) {
     };
 
     this.toQueryString = function(list, keys) {
-      var obj = {},
+      var ids,
+          obj = {},
           res = [];
       
-      obj[keys.id] = [];
+      ids = obj[keys.id] = [];
       obj[keys.markIn] = [];
       obj[keys.markOut] = [];
 
       list.forEach(function(track) {
-        obj[keys.id].push(track.video.id);
-        obj[keys.markIn].push(track.from);
-        obj[keys.markOut].push(track.to);
-      });
+        //var index = ids.indexOf(track.video.id);
+        //ids.push(index > -1 ? index : track.video.id);
+        
+        ids.push(track.video.id);
+        obj[keys.markIn].push(this.toBase64(track.from));
+        obj[keys.markOut].push(this.toBase64(track.to));
+      }.bind(this));
       
       Object.keys(obj).forEach(function(key) {
         if (obj[key].length) {
@@ -77,4 +81,3 @@ define(['mixins/encoding'], function(encoding) {
   return params;
 
 });
-
