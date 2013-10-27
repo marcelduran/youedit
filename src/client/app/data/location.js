@@ -28,9 +28,15 @@ define([
         .join(this.uri.audio ? '&' : ''));
     };
 
+    this.updateTitle = function(ev, data) {
+      this.set([this.uri.video, this.uri.audio]
+        .join(this.uri.audio ? '&' : ''), data.title);
+    };
+
     this.after('initialize', function() {
       this.on(document, 'videoTrackUpdated', this.update.bind(this, 'video'));
       this.on(document, 'audioTrackUpdated', this.update.bind(this, 'audio'));
+      this.on(document, 'titleChanged', this.updateTitle);
     });
 
   }

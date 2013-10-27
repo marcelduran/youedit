@@ -7,7 +7,8 @@ define([
   'ui/track',
   'data/timeline',
   'ui/timeline',
-  'data/location'
+  'data/location',
+  'ui/title',
 
 ], function(
 
@@ -16,7 +17,8 @@ define([
   trackUI,
   timelineData,
   timelineUI,
-  locationData
+  locationData,
+  titleUI
 
 ) {
 
@@ -27,6 +29,7 @@ define([
     timelineData.attachTo('#timeline');
     timelineUI.attachTo('#timeline');
     locationData.attachTo(document); 
+    titleUI.attachTo('#mix-title'); 
   }
 
   return initialize;
