@@ -7,6 +7,9 @@ define([
 
   function location() {
 
+    var reValidTitleChars = /[^\w\d\-_!\(\)\*\.]/g,
+        reSpace = / /g;
+
     this.uri = {
       video: '',
       audio: ''
@@ -28,9 +31,15 @@ define([
         .join(this.uri.audio ? '&' : ''));
     };
 
+    this.titleToUrl = function(title) {
+      return title.toLowerCase()
+        .replace(reSpace, '_')
+        .replace(reValidTitleChars, '');
+    };
+
     this.updateTitle = function(ev, data) {
       this.set([this.uri.video, this.uri.audio]
-        .join(this.uri.audio ? '&' : ''), data.title);
+        .join(this.uri.audio ? '&' : ''), this.titleToUrl(data.title));
     };
 
     this.after('initialize', function() {
