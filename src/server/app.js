@@ -15,7 +15,8 @@ var filename = path.join(__dirname, config.templates.page);
 var pages = {
   main: fs.readFileSync(filename, 'utf8'),
   landing: {},
-  watch: {}
+  watch: {},
+  edit: {}
 };
 
 // load partials
@@ -60,7 +61,7 @@ app.use(express.static(path.resolve(__dirname, './public/')));
 function preCompile(template, locale, view) {
   var compiled, content;
 
-  //// i18n
+  // i18n
   compiled = Mustache.compile(template, ['{{_', '_}}']);
   content = compiled(i18n[locale].t(locale));
 
@@ -88,8 +89,7 @@ function compileTemplate(locale, mode) {
   return Mustache.compile(preCompile(pages.main, locale, view));
 }
 
-// render watch page
-function render(locale, title) {
+function buildWatchPage(locale, title) {
   var compiled = pages.watch[locale];
 
   if (!compiled) {
@@ -102,29 +102,40 @@ function render(locale, title) {
   }, partials[locale]);
 }
 
-// landing page
-app.get('/', function(req, res) {
-  var landing,
+// page to render
+function renderPage(req, res) {
+  var page,
       locale = req.locale;
 
-  if (req.query.v) {
-    landing = render(locale);
+  if (req.query.v || req.query.a) {
+    // watch page
+    page = buildWatchPage(locale, req.params.title || '');
   } else {
-    landing = pages.landing[locale];
-    if (!landing) {
-      landing = pages.landing[locale] = compileTemplate(locale, 'landing')({
-        title: 'YouEd.it'
-      }, partials[locale]);
+    if (req.params.title) {
+      // edit page
+      page = pages.edit[locale];
+      if (!page) {
+        page = pages.edit[locale] = compileTemplate(locale, 'edit empty')({
+          title: req.params.title
+        }, partials[locale]);
+      }
+    } else {
+      // landing page
+      page = pages.landing[locale];
+      if (!page) {
+        page = pages.landing[locale] = compileTemplate(locale, 'landing')({
+          title: 'YouEd.it'
+        }, partials[locale]);
+      }
     }
   }
 
-  res.send(landing);
-});
+  res.send(page);
+}
 
-// watch page
-app.get('/:title', function(req, res) {
-  res.send(render(req.locale, req.params.title));
-});
+app
+  .get('/', renderPage)
+  .get('/:title', renderPage);
 
 app.listen(config.port);
 console.log('app listening on port %s', config.port);
