@@ -29,7 +29,12 @@
 
   {{> footer}}
 
-  {{> scripts}}
+  {{=#script.watch=}}
+    {{> script-watch}}
+  {{=/script.watch=}}
+  {{=^script.watch=}}
+    {{> scripts}}
+  {{=/script.watch=}}
 
 </body>
 </html>

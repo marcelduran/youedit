@@ -77,8 +77,10 @@ function compileTemplate(locale, mode) {
   var view = {
     lang: locale.slice(0, 2),
     mode: mode,
-    cdn: config.cdn
+    cdn: config.cdn,
+    script: {}
   };
+  view.script[mode.split(' ')[0]] = true;
 
   // precompile partials
   partials[locale] = {};
