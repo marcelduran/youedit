@@ -55,7 +55,7 @@ module.exports = function(grunt) {
             ],
             dest: 'build/public/js/',
             expand: true,
-            cwd: 'components'
+            cwd: 'bower_components'
           },
           {
             src: 'app/**/*.js',
@@ -73,7 +73,7 @@ module.exports = function(grunt) {
             src: 'flight/**/*.js',
             dest: 'build/public/js/',
             expand: true,
-            cwd: 'components/'
+            cwd: 'bower_components/'
           },
           {
             src: [
@@ -88,7 +88,7 @@ module.exports = function(grunt) {
             ],
             dest: 'build/public/js/jqueryui',
             expand: true,
-            cwd: 'components/jquery-ui/jqueryui/'
+            cwd: 'bower_components/jquery-ui/jqueryui/'
           }
         ]
       }

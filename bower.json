@@ -1,10 +1,14 @@
 {
   "name": "youedit",
   "version": "0.0.1",
+  "private": true,
   "dependencies": {
-    "flight": "~1.0.9",
+    "flight": "~1.1.1",
     "jquery-ui": "~1.10.2",
-    "requirejs": "~2.1.5",
+    "requirejs": "~2.1.9",
+    "swfobject-umd": "~2.3.0"
+  },
+  "devDependencies": {
     "jasmine": "~1.3.1",
     "jasmine-jquery": "~1.4.2"
   }

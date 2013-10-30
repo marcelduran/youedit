@@ -1,7 +1,7 @@
 *.swp
 .DS_Store
 build
-components
+bower_components
 dist
 gh-pages
 node_modules
