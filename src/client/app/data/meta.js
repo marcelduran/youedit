@@ -7,19 +7,31 @@ define([
 
   function meta() {
 
-    var
-      reValid = /[vaiobe]/, // v|a = video|audio id, i|b = IN, o|e = OUT
-      rePos = /[iobe]/, // clips position: i = IN, o = OUT
-      reDigit = /^\d+$/; // 1 or more digit only, eg: 0, 1, 12
+    this.defaultAttrs({
+      paramMetaMap: {
+        'v': 'videoId',
+        'a': 'audioId',
+        'i': 'videoIn',
+        'o': 'videoOut',
+        'b': 'audioIn',
+        'e': 'audioOut'
+      },
+      parseSeparator: '.',
+      parseGroup: '!',
+      parseMultiplier: '*'
+    });
 
-    this.parseMetainfo = function() {
+    this.parseParams = function(loc) {
       var qs,
-          data = {},
-          s = location.search,
-          h = location.hash,
+          params = {},
+          s = loc.search,
+          h = loc.hash,
           hash = h.slice(1).split('&'),
           idx = s.lastIndexOf('/'),
-          fromBase64 = this.fromBase64;
+
+          reValid = /[vaiobe]/, // v|a = video|audio id, i|b = IN, o|e = OUT
+          rePos = /[iobe]/, // clips position: i = IN, o = OUT
+          reDigit = /^\d+$/; // 1 or more digit only, eg: 0, 1, 12
 
       // remove heading "?" and trailing "/"
       idx = idx > -1 ? idx : s.length;
@@ -29,39 +41,92 @@ define([
       qs.concat(hash).forEach(function(entry) {
         var kv = entry.split('='),
             key = decodeURIComponent(kv[0]).charAt(0),
-            val = decodeURIComponent(kv[1]);
+            val = decodeURIComponent(kv[1]).trim(),
+            meta = this.attr.paramMetaMap[key];
 
         // skip invalid parameters
-        if (!reValid.test(key)) {
+        if (!meta) {
           return;
         }
 
-        // get parameters
-        if (rePos.test(key)) {
+        params[meta] = val.split(
+          this.attr[rePos.test(key) ? 'parseGroup' : 'parseSeparator']);
 
-          // in/out positions
-          data[key] = val.split('!').map(function(block) {
-            var last;
+      }.bind(this));
 
-            return block.split('.').map(function(n) {
-              n = (n === '~' ? last : fromBase64(n));
-              last = n;
+      // normalize video ids (index shortcut)
+      params.videoId = (params.videoId || []).map(function(id, idx, array) {
+        return reDigit.test(id) ? array[id] : id;
+      });
+      // normalize audio ids (index shortcut, starting from video ids)
+      params.audioId = (params.audioId || []).map(function(id, idx, array) {
+        return reDigit.test(id) ? params.videoId.concat(array)[id] : id;
+      });
 
-              return n;
-            });
-          });
+      return params;
+    };
 
-        } else {
+    this.parseClips = function(source, type, ids, array) {
+      var last,
+          index = 0,
+          length = 0,
+          bound = 0;
 
-          // video|audio ids
-          data[key] = val.split('.').map(function(v, i, a) {
-            // check video id shortcuts
-            return reDigit.test(v) ? a[v] : v;
-          });
+      if (type === 'out') {
+        bound = Infinity;
+      }
 
+      (source || []).forEach(function eachInGroup(group, idx) {
+        var id = ids[idx];
+
+        if (!id) {
+          return;
         }
 
-      });
+        group.split(this.attr.parseSeparator).forEach(function eachItem(item) {
+          var len, value,
+              obj = array[index] || {id: id};
+
+          // get value and occurences
+          item = item.split(this.attr.parseMultiplier);
+          len = (item[1] && this.fromBase64(item[1])) || 1;
+          value = item[0];
+
+          // set value and last (base10) with bound fallback (0 or Infinity)
+          value = last =
+            value === '' ? bound :
+            value === this.attr.parseLast ? last : this.fromBase64(value);
+
+          // set clip in/out and range from/to
+          while (len--) {
+            if (type === 'out') {
+              obj.from = length;
+              obj.to = length + (value - obj['in']);
+            }
+            length = obj.to + 1;
+            obj[type] = value;
+            array[index] = obj;
+            index += 1;
+          }
+
+        }.bind(this));
+      }.bind(this));
+    };
+
+    this.parseMetainfo = function() {
+      var data = {
+            video: [],
+            audio: []
+          },
+          params = this.parseParams(window.location);
+
+      // video clips
+      this.parseClips(params.videoIn, 'in', params.videoId, data.video);
+      this.parseClips(params.videoOut, 'out', params.videoId, data.video);
+
+      // audio clips
+      this.parseClips(params.audioIn, 'in', params.audioId, data.audio);
+      this.parseClips(params.audioOut, 'out', params.audioId, data.audio);
 
       this.trigger('metainfoParsed', data);
     };

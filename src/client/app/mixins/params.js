@@ -1,6 +1,6 @@
 'use strict';
 
-define(['mixins/encoding'], function(encoding) {
+define(function() {
 
   function params() {
 
