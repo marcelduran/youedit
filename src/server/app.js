@@ -10,6 +10,10 @@ var express = require('express'),
     path = require('path'),
     config = require('./config/config.json');
 
+var reDoubleUnderscores = /\_\_/g,
+    reSingleUnderscore = /\_/g,
+    reLineBreak = /\n/g;
+
 // load page template
 var filename = path.join(__dirname, config.templates.page);
 var pages = {
@@ -104,6 +108,13 @@ function buildWatchPage(locale, title) {
   }, partials[locale]);
 }
 
+function parseTitle(encodedTitle) {
+  return decodeURIComponent(encodedTitle)
+    .replace(reDoubleUnderscores, '\n')
+    .replace(reSingleUnderscore, ' ')
+    .replace(reLineBreak, '_');
+}
+
 // page to render
 function renderPage(req, res) {
   var page,
@@ -111,14 +122,14 @@ function renderPage(req, res) {
 
   if (req.query.v || req.query.a) {
     // watch page
-    page = buildWatchPage(locale, req.params.title || '');
+    page = buildWatchPage(locale, parseTitle(req.params.title || ''));
   } else {
     if (req.params.title) {
       // edit page
       page = pages.edit[locale];
       if (!page) {
         page = pages.edit[locale] = compileTemplate(locale, 'edit empty')({
-          title: req.params.title
+          title: parseTitle(req.params.title)
         }, partials[locale]);
       }
     } else {

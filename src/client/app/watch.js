@@ -13,7 +13,7 @@ define([
 ) {
 
   function initialize() {
-    playerUI.attachTo('#player');
+    playerUI.attachTo('#video');
     metaData.attachTo(document);
   }
 

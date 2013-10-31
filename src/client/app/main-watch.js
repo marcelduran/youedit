@@ -4,6 +4,7 @@ requirejs.config({
   paths: {
     'flight': '../flight',
     'jquery': '../jquery/jquery',
+    'swfobject': '../swfobject'
   }
 });
 
