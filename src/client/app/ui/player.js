@@ -40,7 +40,7 @@ define([
           $player.addClass(this.attr.activeClass);
         }
 
-        this.cue(player, mgr.ids[index], index === mgr.curPlayer);
+        this.cue(player, index, mgr);
       }.bind(this);
 
       window.onPlayerError = function(errorCode) {
@@ -113,16 +113,14 @@ define([
       }
 
       mgr.ids[index] = id;
+      mgr.playingIndex[index] = mgr.current;
       mgr.curBuffer = (mgr.curBuffer + 1) % mgr.bufferLength;
 
       if (player) {
         // cue video/audio
-        this.cue(player, id, index === mgr.curPlayer);
+        this.cue(player, index, mgr);
       } else {
         // embed new player
-        console.log(this.attr.playerURL + mgr.type + index, playerEl,
-          this.attr.playerWidth, this.attr.playerHeight, this.attr.flashVersion,
-          null, null, this.attr.playerParams, playerAttrs);
         swfobject.embedSWF(this.attr.playerURL + mgr.type + index, playerEl,
           this.attr.playerWidth, this.attr.playerHeight, this.attr.flashVersion,
           null, null, this.attr.playerParams, playerAttrs);
@@ -131,16 +129,16 @@ define([
       return mgr.curBuffer !== mgr.curPlayer;
     };
 
-    this.cue = function(player, id, play) {
+    this.cue = function(player, index, mgr) {
       player.cueVideoById({
-        videoId: id,
-        startSeconds: 15,
-        endSeconds: 50
+        videoId: mgr.ids[index],
+        startSeconds: mgr.list[mgr.playingIndex[index]].in,
+        endSeconds: mgr.list[mgr.playingIndex[index]].out
       });
       player.mute();
-      player.seekTo(45, true);
+      //player.seekTo(45, true);
 
-      if (play) {
+      if (index === mgr.curPlayer) {
         player.unMute();
         player.playVideo();
       } else {
@@ -173,7 +171,8 @@ define([
           bufferLength: this.attr.videoBufferLength,
           ids: [],
           players: [],
-          $players: []
+          $players: [],
+          playingIndex: []
         }
       };
 

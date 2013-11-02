@@ -7,7 +7,9 @@ define(function() {
     this.defaultAttrs({
       parseSeparator: '.',
       parseGroup: '!',
-      parseMultiplier: '*'
+      parseMultiplier: '*',
+
+      rePos: /[iobe]/ // clips position: i = IN, o = OUT
     });
 
     // convert base 10 numbers into base 64
@@ -133,7 +135,8 @@ define(function() {
       
       Object.keys(obj).forEach(function(key) {
         if (obj[key].length) {
-          res.push(key + '=' + obj[key].join(this.attr.parseSeparator));
+          res.push(key + '=' + obj[key].join(this.attr[
+            this.attr.rePos.test(key) ? 'parseGroup' : 'parseSeparator']));
         }
       }.bind(this));
 

@@ -27,7 +27,6 @@ define([
           idx = s.lastIndexOf('/'),
 
           reValid = /[vaiobe]/, // v|a = video|audio id, i|b = IN, o|e = OUT
-          rePos = /[iobe]/, // clips position: i = IN, o = OUT
           reDigit = /^\d+$/; // 1 or more digit only, eg: 0, 1, 12
 
       // remove heading "?" and trailing "/"
@@ -46,8 +45,8 @@ define([
           return;
         }
 
-        params[meta] = val.split(
-          this.attr[rePos.test(key) ? 'parseGroup' : 'parseSeparator']);
+        params[meta] = val.split(this.attr[
+          this.attr.rePos.test(key) ? 'parseGroup' : 'parseSeparator']);
 
       }.bind(this));
 

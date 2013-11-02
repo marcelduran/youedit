@@ -25,6 +25,7 @@
   font-size: 42px;
 }
 #video {
+  position: relative;
   background-color: #000;
   height: 390px;
 }
