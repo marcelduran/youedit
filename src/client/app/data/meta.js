@@ -15,10 +15,7 @@ define([
         'o': 'videoOut',
         'b': 'audioIn',
         'e': 'audioOut'
-      },
-      parseSeparator: '.',
-      parseGroup: '!',
-      parseMultiplier: '*'
+      }
     });
 
     this.parseParams = function(loc) {
@@ -67,8 +64,7 @@ define([
     };
 
     this.parseClips = function(source, type, ids, array) {
-      var last,
-          index = 0,
+      var index = 0,
           length = 0,
           bound = 0;
 
@@ -92,10 +88,8 @@ define([
           len = (item[1] && this.fromBase64(item[1])) || 1;
           value = item[0];
 
-          // set value and last (base10) with bound fallback (0 or Infinity)
-          value = last =
-            value === '' ? bound :
-            value === this.attr.parseLast ? last : this.fromBase64(value);
+          // set value base10 with bound fallback (0 or Infinity)
+          value = value === '' ? bound : this.fromBase64(value);
 
           // set clip in/out and range from/to
           while (len--) {

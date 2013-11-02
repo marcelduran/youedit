@@ -4,9 +4,11 @@ define(function() {
 
   function params() {
 
-    var
-      // constants
-      KEY_SEP = '.';
+    this.defaultAttrs({
+      parseSeparator: '.',
+      parseGroup: '!',
+      parseMultiplier: '*'
+    });
 
     // convert base 10 numbers into base 64
     // e.g.: 0 -> 0, 10 -> a, 61 -> Z, 62 -> -, 63 -> _ 
@@ -49,29 +51,91 @@ define(function() {
       return result;
     };
 
-    this.toQueryString = function(list, keys) {
-      var ids,
+    this.minifyMarks = function(marks, bound) {
+      var i, len, mark, last, times,
+          minified = [];
+
+      // loop all marks
+      for (i = 0, len = marks.length; i <= len; i++) {
+        mark = marks[i];
+
+        // init once
+        if (last === undefined) {
+          last = mark;
+          times = 0;
+        }
+
+        // mark change
+        if (mark !== last) {
+          // encode value base64
+          last = last === bound ? '' : this.toBase64(last);
+          if (times > 1) {
+            // append multiplier to value
+            last += this.attr.parseMultiplier + this.toBase64(times);
+          }
+          // dump value
+          minified.push(last);
+
+          // reset
+          last = mark;
+          times = 0;
+        }
+
+        times++;
+      }
+
+      return minified.join(this.attr.parseSeparator);
+    };
+
+    this.toQueryString = function(tracks, keys) {
+      var i, len, track, id, ids, from, to, index, videoId,
           obj = {},
           res = [];
       
+      // initialize querystring object representation
       ids = obj[keys.id] = [];
       obj[keys.markIn] = [];
       obj[keys.markOut] = [];
 
-      list.forEach(function(track) {
-        //var index = ids.indexOf(track.video.id);
-        //ids.push(index > -1 ? index : track.video.id);
-        
-        ids.push(track.video.id);
-        obj[keys.markIn].push(this.toBase64(track.from));
-        obj[keys.markOut].push(this.toBase64(track.to));
-      }.bind(this));
+      // loop all tracks
+      for (i = 0, len = tracks.length; i <= len; i++) {
+        track = tracks[i];
+        videoId = track && track.video.id;
+
+        // init once
+        if (id === undefined) {
+          id = videoId;
+          from = [];
+          to = [];
+        }
+
+        // id change
+        if (id !== videoId) {
+          // dump marks
+          obj[keys.markIn].push(this.minifyMarks(from, 0));
+          obj[keys.markOut].push(this.minifyMarks(to, Infinity));
+
+          // dump id
+          index = ids.indexOf(id);
+          ids.push(index > -1 ? index : id);
+
+          // reset
+          id = videoId;
+          from = [];
+          to = [];
+        }
+
+        if (track) {
+          from.push(track.from);
+          to.push(track.to === track.video.duration ? Infinity : track.to);
+        }
+      }
       
       Object.keys(obj).forEach(function(key) {
         if (obj[key].length) {
-          res.push(key + '=' + obj[key].join(KEY_SEP));
+          res.push(key + '=' + obj[key].join(this.attr.parseSeparator));
         }
-      });
+      }.bind(this));
 
       return res.join('&');
     };
