@@ -130,12 +130,15 @@ define([
     };
 
     this.cue = function(player, index, mgr) {
+      var track = mgr.list[mgr.playingIndex[index]];
+
       player.cueVideoById({
         videoId: mgr.ids[index],
-        startSeconds: mgr.list[mgr.playingIndex[index]].in,
-        endSeconds: mgr.list[mgr.playingIndex[index]].out
+        startSeconds: track.in,
+        endSeconds: track.out
       });
       player.mute();
+      player.seekTo(track.in, true);
 
       if (index === mgr.curPlayer) {
         player.unMute();
@@ -158,7 +161,6 @@ define([
     };
 
     this.start = function(ev, data) {
-      console.log(data);
       // video/audio managers config object
       this.managers = {
         video: {
