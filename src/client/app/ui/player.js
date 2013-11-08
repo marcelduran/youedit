@@ -136,7 +136,6 @@ define([
         endSeconds: mgr.list[mgr.playingIndex[index]].out
       });
       player.mute();
-      //player.seekTo(45, true);
 
       if (index === mgr.curPlayer) {
         player.unMute();

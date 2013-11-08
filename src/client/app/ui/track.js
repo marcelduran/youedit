@@ -26,6 +26,8 @@ define(['flight/lib/component', 'mixins/time', 'jqueryui/slider'], function(comp
           min = values[0],
           max = values[1];
 
+      this.trigger('trackPositionChanged', {value: ui.value});
+
       $markin.text(this.prettyTime(min));
       $markout.text(this.prettyTime(max));
       $duration.val(this.prettyTime(max - min));
@@ -114,7 +116,7 @@ define(['flight/lib/component', 'mixins/time', 'jqueryui/slider'], function(comp
         values: [0, 1],
         slide: update.bind(this),
         change: update.bind(this),
-        create: sliderCreated.bind(this)
+        create: sliderCreated.bind(this),
       }).data('ui-slider');
 
       // hijack slide handlers click

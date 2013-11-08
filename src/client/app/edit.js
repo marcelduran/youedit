@@ -9,6 +9,7 @@ define([
   'ui/timeline',
   'data/location',
   'ui/title',
+  'ui/edit-player'
 
 ], function(
 
@@ -18,7 +19,8 @@ define([
   timelineData,
   timelineUI,
   locationData,
-  titleUI
+  titleUI,
+  playerUI
 
 ) {
 
@@ -30,6 +32,7 @@ define([
     timelineUI.attachTo('#timeline');
     locationData.attachTo(document); 
     titleUI.attachTo('#mix-title'); 
+    playerUI.attachTo('#video');
   }
 
   return initialize;
