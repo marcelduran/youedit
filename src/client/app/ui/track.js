@@ -22,11 +22,18 @@ define(['flight/lib/component', 'mixins/time', 'jqueryui/slider'], function(comp
     };
 
     function update(ev, ui) {
-      var values = ui.values,
+      var value = ui.value,
+          values = ui.values,
           min = values[0],
           max = values[1];
 
-      this.trigger('trackPositionChanged', {value: ui.value});
+      if (this.lastValue !== value) {
+        this.lastValue = value;
+        this.trigger('trackPositionChanged', {value: value});
+      }
+      this.lastSlider = value === max ? 1 : 0;
+      this.lastMin = min;
+      this.lastMax = max;
 
       $markin.text(this.prettyTime(min));
       $markout.text(this.prettyTime(max));
@@ -124,9 +131,25 @@ define(['flight/lib/component', 'mixins/time', 'jqueryui/slider'], function(comp
       slider._mouseCapture = preCapture;
     };
 
+    this.setPosition = function(ev, data) {
+      var slider, value;
+
+      slider = this.lastSlider || 0;
+      value = data.value;
+
+      if (slider === 0 && value > this.lastMax) {
+        slider = 1;  
+      } else if (slider === 1 && value < this.lastMin) {
+        slider = 0;
+      }
+
+      $node.slider('values', slider, value);
+    };
+
     this.after('initialize', function() {
       this.initializeSlider();
       this.on(document, 'videoSelected', this.setVideo);
+      this.on(document, 'videoPositionChanged', this.setPosition);
     });
 
   }

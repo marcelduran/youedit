@@ -1,19 +1,21 @@
 'use strict';
 
-define([
-  'flight/lib/component',
-  'swfobject/swfobject'
-], function(component, swfobject) {
+define(['flight/lib/component'], function(component) {
 
   function player() {
 
     this.defaultAttrs({
-      playerURL: 'http://www.youtube.com/apiplayer?' +
-        'version=3&enablejsapi=1',
+      playerURL: '//www.youtube.com/iframe_api',
       playerWidth: 530,
       playerHeight: 322,
-      flashVersion: 10,
-      playerParams: {allowScriptAccess: 'always'},
+      playerVars: {
+        autoplay: 0,        // no autoplay
+        controls: 1,        // show all playback controls
+        modestbranding: 1,  // no YT logo
+        rel: 0,             // no related videos at the end
+        showinfo: 0,        // no video info
+        fs: 0               // no fullscreen button
+      },
 
       playerClass: 'player',
       playerSelector: '.player',
@@ -21,45 +23,53 @@ define([
       hasPlayerClass: 'has-player'
     });
 
-    this.createGlobalEvents = function() {
-      window.onYouTubePlayerReady = function() {
-        this.player = this.select('playerSelector')[0];
-        this.player.addEventListener('onError', 'onPlayerError');
-      }.bind(this);
-
-      window.onPlayerError = function(errorCode) {
-        console.log('An error occured of type %s', errorCode);
-      };
-    };
-
-    this.createPlayersMarkup = function() {
-      var markup = '<div class="' + this.attr.playerClass + '"/>';
-      this.$node.prepend(markup);
-    };
-
     this.setVideo = function(ev, data) {
-      this.player.loadVideoById(data.video.id);
+      if (this.player && this.player.loadVideoById) {
+        this.player.cueVideoById(data.video.id);
+        this.player.seekTo(0, true);
+      } else if (this.player && this.player.ready) {
+        this.player = new YT.Player(this.select('playerSelector')[0], {
+          videoId: data.video.id,
+          width: this.attr.playerWidth,
+          height: this.attr.playerHeight,
+          playerVars: this.attr.playerVars,
+          events: {
+            onStateChange: this.onStateChange.bind(this)
+          }
+        });
+      }
       this.$node.addClass(this.attr.hasPlayerClass);
     };
 
-    this.embedPlayer = function() {
-      var playerAttrs = {
-        'class': this.attr.playerClass
-      };
-
-      swfobject.embedSWF(this.attr.playerURL, this.select('playerSelector')[0],
-        this.attr.playerWidth, this.attr.playerHeight, this.attr.flashVersion,
-        null, null, this.attr.playerParams, playerAttrs);
+    this.onStateChange = function(ev) {
+      if (ev.data === YT.PlayerState.PLAYING ||
+          ev.data === YT.PlayerState.PAUSED) {
+        this.trigger('videoPositionChanged', {
+          value: Math.round(ev.target.getCurrentTime())
+        });
+      }
     };
 
     this.setPosition = function(ev, data) {
-      this.player.seekTo(data.value, true);
+      if (this.player && this.player.seekTo) {
+        this.player.seekTo(data.value, true);
+      }
+    };
+
+    this.init = function() {
+      var markup = '<div class="' + this.attr.playerClass + '"/>';
+
+      this.$node.prepend(markup);
+
+      $.getScript(this.attr.playerURL);
+
+      window.onYouTubeIframeAPIReady = function() {
+        this.player = {ready: true};
+      }.bind(this);
     };
 
     this.after('initialize', function() {
-      this.createPlayersMarkup();
-      this.createGlobalEvents();
-      this.embedPlayer();
+      this.init();
       this.on(document, 'videoSelected', this.setVideo);
       this.on(document, 'trackPositionChanged', this.setPosition);
     });

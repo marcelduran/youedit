@@ -4,8 +4,7 @@ requirejs.config({
   paths: {
     'flight': '../flight',
     'jquery': '../jquery/jquery',
-    'jqueryui': '../jqueryui',
-    'swfobject': '../swfobject'
+    'jqueryui': '../jqueryui'
   }
 });
 
