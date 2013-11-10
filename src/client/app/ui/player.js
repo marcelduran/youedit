@@ -1,19 +1,21 @@
 'use strict';
 
-define([
-  'flight/lib/component',
-  'swfobject/swfobject'
-], function(component, swfobject) {
+define(['flight/lib/component'], function(component) {
 
   function player() {
 
     this.defaultAttrs({
-      playerURL: 'http://www.youtube.com/apiplayer?' +
-                 'version=3&enablejsapi=1&playerapiid=',
+      playerURL: '//www.youtube.com/iframe_api',
       playerWidth: 640,
       playerHeight: 390,
-      flashVersion: 10,
-      playerParams: {allowScriptAccess: 'always'},
+      playerVars: {
+        autoplay: 1,        // no autoplay
+        controls: 0,        // show all playback controls
+        modestbranding: 1,  // no YT logo
+        rel: 0,             // no related videos at the end
+        showinfo: 0,        // no video info
+        fs: 0               // no fullscreen button
+      },
 
       videoBufferLength: 3,
 
@@ -22,50 +24,50 @@ define([
       playerSelector: '.player'
     });
 
-    this.createGlobalEvents = function() {
-      window.onYouTubePlayerReady = function(playerId) {
-        var player, type, index, mgr, $player;
+    this.init = function() {
+      var markup = '';
 
-        type = playerId.slice(0, 5);
-        index = parseInt(playerId.slice(5), 10);
-        mgr = this.managers[type];
+      ['video'].forEach(function(type) {
+        var i = this.attr[type + 'BufferLength'];
 
-        $player = mgr.$players[index] = $('#' + type + '-player-' + index);
-        player = mgr.players[index] = $player[0];
-        player.addEventListener('onStateChange',
-          'onPlayerStateChange_' + type + index);
-        player.addEventListener('onError', 'onPlayerError');
-
-        if (index === 0) {
-          $player.addClass(this.attr.activeClass);
+        while (i--) {
+          markup += '<div class="player" id="' + type + '-player-' + i + '"/>';
         }
+      }.bind(this));
+      this.$node.prepend(markup);
 
-        this.cue(player, index, mgr);
+      $.getScript(this.attr.playerURL);
+
+      window.onYouTubeIframeAPIReady = function() {
+        this.next(this.managers.video);
       }.bind(this);
-
-      window.onPlayerError = function(errorCode) {
-        console.log('An error occured of type %s', errorCode);
-      };
     };
 
-    /* -1 (unstarted)
-        0 (ended)
-        1 (playing)
-        2 (paused)
-        3 (buffering)
-        5 (video cued) */
-    this.onPlayerStateChange = function(mgr, index, state) {
+    this.onPlayerReady = function(mgr, index, ev) {
+      var player, $player;
+
+      $player = mgr.$players[index] = $('#' + mgr.type + '-player-' + index);
+      player = mgr.players[index] = ev.target;
+
+      if (index === 0) {
+        $player.addClass(this.attr.activeClass);
+      }
+
+      this.cue(player, index, mgr);
+    };
+
+    this.onPlayerStateChange = function(mgr, ev) {
       var player, duration;
 
-      player = mgr.players[index];
+      player = ev.target;
       duration = player.getDuration();
 
       // unmute paused video/audio
-      if (state === 2 && duration && player.isMuted()) {
+      if (ev.data === YT.PlayerState.PAUSED && duration && player.isMuted()) {
         player.unMute();
       }
 
-      if (state === 0) {
+      if (ev.data === YT.PlayerState.ENDED) {
         mgr.ids[mgr.curPlayer] = null;
         mgr.$players[mgr.curPlayer].toggleClass(this.attr.activeClass);
         mgr.curPlayer = (mgr.curPlayer + 1) % mgr.bufferLength;
@@ -81,31 +83,13 @@ define([
       }
     };
 
-    this.createPlayersMarkup = function() {
-      var markup = '';
-
-      ['video'].forEach(function(type) {
-        var i = this.attr[type + 'BufferLength'];
-
-        while (i--) {
-          markup += '<div class="player" id="' + type + '-player-' + i + '"/>';
-        }
-      }.bind(this));
-
-      this.$node.prepend(markup);
-    };
-
     this.loadPlayer = function(mgr) {
-      var id, index, player, playerEl, playerAttrs;
+      var id, index, player, playerEl;
       
       id = mgr.list[mgr.current].id;
       index = mgr.curBuffer;
       player = mgr.players[index];
       playerEl = $('#' + mgr.type + '-player-' + index)[0];
-      playerAttrs = {
-        'id': playerEl.id,
-        'class': this.attr.playerClass
-      };
 
       // no player buffer available
       if (mgr.ids[index]) {
@@ -121,9 +105,16 @@ define([
         this.cue(player, index, mgr);
       } else {
         // embed new player
-        swfobject.embedSWF(this.attr.playerURL + mgr.type + index, playerEl,
-          this.attr.playerWidth, this.attr.playerHeight, this.attr.flashVersion,
-          null, null, this.attr.playerParams, playerAttrs);
+        this.player = new YT.Player(playerEl, {
+          videoId: id,
+          width: this.attr.playerWidth,
+          height: this.attr.playerHeight,
+          playerVars: this.attr.playerVars,
+          events: {
+            onStateChange: this.onPlayerStateChange.bind(this, mgr),
+            onReady: this.onPlayerReady.bind(this, mgr, index)
+          }
+        });
       }
 
       return mgr.curBuffer !== mgr.curPlayer;
@@ -176,24 +167,10 @@ define([
           playingIndex: []
         }
       };
-
-      // create player listeners
-      Object.keys(this.managers).forEach(function(type) {
-        var mgr = this.managers[type],
-            i = mgr.bufferLength;
-
-        while(i--) {
-          window['onPlayerStateChange_' + type + i] =
-            this.onPlayerStateChange.bind(this, mgr, i);
-        }
-      }.bind(this));
-
-      this.next(this.managers.video);
     };
 
     this.after('initialize', function() {
-      this.createPlayersMarkup();
-      this.createGlobalEvents();
+      this.init();
       this.on(document, 'metainfoParsed', this.start);
     });
   }
