@@ -1,6 +1,9 @@
 'use strict';
 
-define(['flight/lib/component'], function(component) {
+define([
+  'flight/lib/component',
+  'mixins/template'
+], function(component, template) {
 
   function player() {
 
@@ -9,37 +12,45 @@ define(['flight/lib/component'], function(component) {
       playerWidth: 640,
       playerHeight: 390,
       playerVars: {
-        autoplay: 1,        // no autoplay
-        controls: 0,        // show all playback controls
+        autoplay: 0,        // no autoplay
+        controls: 0,        // no playback controls
         modestbranding: 1,  // no YT logo
         rel: 0,             // no related videos at the end
         showinfo: 0,        // no video info
         fs: 0               // no fullscreen button
       },
 
-      videoBufferLength: 3,
+      bufferLength: {
+        video: 3,
+        audio: 2
+      },
 
       activeClass: 'active',
-      playerClass: 'player',
-      playerSelector: '.player'
+      playerSelector: '.player',
+      playerMarkup:
+        '<div class="player {{type}}" id="{{type}}-player-{{index}}"/>'
     });
 
     this.init = function() {
       var markup = '';
 
-      ['video'].forEach(function(type) {
-        var i = this.attr[type + 'BufferLength'];
+      $.getScript(this.attr.playerURL);
+
+      ['video', 'audio'].forEach(function(type) {
+        var i = this.attr.bufferLength[type];
 
         while (i--) {
-          markup += '<div class="player" id="' + type + '-player-' + i + '"/>';
+          markup += this.template(this.attr.playerMarkup, {
+            type: type,
+            index: i
+          });
         }
       }.bind(this));
       this.$node.prepend(markup);
 
-      $.getScript(this.attr.playerURL);
-
       window.onYouTubeIframeAPIReady = function() {
         this.next(this.managers.video);
+        this.next(this.managers.audio);
       }.bind(this);
     };
 
@@ -48,6 +59,10 @@ define(['flight/lib/component'], function(component) {
 
       $player = mgr.$players[index] = $('#' + mgr.type + '-player-' + index);
       player = mgr.players[index] = ev.target;
+
+      if (mgr.hasAudio) {
+        player.mute();
+      }
 
       if (index === 0) {
         $player.addClass(this.attr.activeClass);
@@ -62,8 +77,9 @@ define(['flight/lib/component'], function(component) {
       player = ev.target;
       duration = player.getDuration();
 
-      // unmute paused video/audio
-      if (ev.data === YT.PlayerState.PAUSED && duration && player.isMuted()) {
+      // unmute paused video/audio (for videos, only audioless tracks)
+      if (ev.data === YT.PlayerState.PAUSED && duration &&
+          player.isMuted() && !mgr.hasAudio) {
         player.unMute();
       }
 
@@ -74,7 +90,9 @@ define(['flight/lib/component'], function(component) {
         if (mgr.ids[mgr.curPlayer]) {
           player = mgr.players[mgr.curPlayer];
           mgr.$players[mgr.curPlayer].toggleClass(this.attr.activeClass);
-          player.unMute();
+          if (!mgr.hasAudio) {
+            player.unMute();
+          }
           player.playVideo();
         }
         if (mgr.curPlayer !== mgr.curBuffer) {
@@ -132,7 +150,9 @@ define(['flight/lib/component'], function(component) {
       player.seekTo(track.in, true);
 
       if (index === mgr.curPlayer) {
-        player.unMute();
+        if (!mgr.hasAudio) {
+          player.unMute();
+        }
         player.playVideo();
       } else {
         player.pauseVideo();
@@ -160,7 +180,20 @@ define(['flight/lib/component'], function(component) {
           list: data.video,
           curBuffer: 0,
           curPlayer: 0,
-          bufferLength: this.attr.videoBufferLength,
+          bufferLength: this.attr.bufferLength.video,
+          ids: [],
+          players: [],
+          $players: [],
+          playingIndex: [],
+          hasAudio: data.audio.length > 0
+        },
+        audio: {
+          type: 'audio',
+          current: 0,
+          list: data.audio,
+          curBuffer: 0,
+          curPlayer: 0,
+          bufferLength: this.attr.bufferLength.audio,
           ids: [],
           players: [],
           $players: [],
@@ -175,6 +208,6 @@ define(['flight/lib/component'], function(component) {
     });
   }
 
-  return component(player);
+  return component(player, template);
 
 });

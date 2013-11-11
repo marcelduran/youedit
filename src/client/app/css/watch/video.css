@@ -14,3 +14,7 @@
 .player.active {
   opacity: 1;
 }
+
+#video .player.audio {
+  display: none;
+}
