@@ -1,6 +1,10 @@
 'use strict';
 
-define(['flight/lib/component', 'mixins/time', 'jqueryui/slider'], function(component, time) {
+define([
+  'flight/lib/component',
+  'mixins/time',
+  'jqueryui/slider'
+], function(component, time) {
 
   function track() {
     var $node, $duration, $markin, $markout, $left, $right,
@@ -19,6 +23,7 @@ define(['flight/lib/component', 'mixins/time', 'jqueryui/slider'], function(comp
       $node.slider('option', 'max', video.duration);
       $node.slider('option', 'values', [0, video.duration]);
       $('body').removeClass(this.attr.emptyClass);
+      this.lastSlider = 0;
     };
 
     function update(ev, ui) {
