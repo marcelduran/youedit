@@ -27,6 +27,7 @@ define(['flight/lib/component'], function(component) {
       if (this.player && this.player.loadVideoById) {
         this.player.cueVideoById(data.video.id);
         this.player.seekTo(0, true);
+        this.player.pauseVideo();
       } else if (this.player && this.player.ready) {
         this.player = new YT.Player(this.select('playerSelector')[0], {
           videoId: data.video.id,
@@ -42,17 +43,19 @@ define(['flight/lib/component'], function(component) {
     };
 
     this.onStateChange = function(ev) {
-      if (ev.data === YT.PlayerState.PLAYING ||
-          ev.data === YT.PlayerState.PAUSED) {
+      if (ev.data === YT.PlayerState.PAUSED &&
+          this.lastPlayerState !== YT.PlayerState.PLAYING) {
         this.trigger('videoPositionChanged', {
           value: Math.round(ev.target.getCurrentTime())
         });
       }
+      this.lastPlayerState = ev.data;
     };
 
     this.setPosition = function(ev, data) {
       if (this.player && this.player.seekTo) {
         this.player.seekTo(data.value, true);
+        this.player.pauseVideo();
       }
     };
 
