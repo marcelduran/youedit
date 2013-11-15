@@ -3,3 +3,7 @@
 #comments {
   margin-top: 40px;
 }
+#disqus_thread {
+  width: 640px;
+  margin: 0 auto;
+}
