@@ -24,7 +24,7 @@ define(['flight/lib/component'], function(component) {
     });
 
     this.setVideo = function(ev, data) {
-      if (this.player && this.player.loadVideoById) {
+      if (this.player && this.player.cueVideoById) {
         this.player.cueVideoById(data.video.id);
         this.player.seekTo(0, true);
         this.player.pauseVideo();
@@ -38,6 +38,9 @@ define(['flight/lib/component'], function(component) {
             onStateChange: this.onStateChange.bind(this)
           }
         });
+      } else {
+        // yt player not loaded yet, try again
+        setTimeout(this.setVideo.bind(this, ev, data), 250);
       }
       this.$node.addClass(this.attr.hasPlayerClass);
     };
