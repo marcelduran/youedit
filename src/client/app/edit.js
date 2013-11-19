@@ -9,7 +9,8 @@ define([
   'ui/timeline',
   'data/location',
   'ui/title',
-  'ui/edit-player'
+  'ui/edit-player',
+  'ui/edit-preview'
 
 ], function(
 
@@ -20,7 +21,8 @@ define([
   timelineUI,
   locationData,
   titleUI,
-  playerUI
+  playerUI,
+  previewUI
 
 ) {
 
@@ -33,8 +35,11 @@ define([
     locationData.attachTo(document); 
     titleUI.attachTo('#mix-title'); 
     playerUI.attachTo('#video');
+    previewUI.attachTo('#preview');
   }
 
-  return initialize;
+  return {
+    initialize: initialize
+  };
 
 });

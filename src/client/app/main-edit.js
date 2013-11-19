@@ -10,5 +10,5 @@ requirejs.config({
 
 require(['jquery', 'edit'], function($, edit) {
   window.$ = window.jQuery = $;
-  edit();
+  edit.initialize();
 });
