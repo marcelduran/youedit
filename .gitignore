@@ -1,4 +1,5 @@
 *.swp
+*.pem
 .DS_Store
 build
 bower_components
