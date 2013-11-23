@@ -128,14 +128,14 @@ module.exports = function(grunt) {
       build: {
         options: {
           file: 'build/app.js',
-          watchedExtensions: ['js', 'mustache', 'css']
+          watchedExtensions: ['js', 'mustache', 'css', 'json']
         }
       }
     },
 
     watch: {
       all: {
-        files: ['Gruntfile.js', 'src/**/*.js', 'src/**/*.css', 'src/**/*.mustache'],
+        files: ['Gruntfile.js', 'src/**/*.js', 'src/**/*.css', 'src/**/*.mustache', 'src/**/*.json'],
         tasks: ['build']
       }
     },
