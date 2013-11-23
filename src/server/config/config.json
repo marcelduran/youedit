@@ -1,5 +1,9 @@
 {
-  "port": 8000,
+  "env": "dev",
+  "port": {
+    "http": 8000,
+    "https": 8001
+  },
   "templates": {
     "page": "./templates/page.mustache"
   },

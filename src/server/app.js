@@ -8,6 +8,8 @@ var express = require('express'),
     locale = require('locale'),
     fs = require('fs'),
     path = require('path'),
+    http = require('http'),
+    https = require('https'),
     config = require('./config/config.json');
 
 var reDoubleUnderscores = /\_\_/g,
@@ -54,13 +56,6 @@ files.forEach(function eachFile(file) {
     });
   }
 });
-
-// initialize express app
-var app = express();
-app.use(express.compress());
-app.use(express.logger());
-app.use(locale(i18n.supported));
-app.use(express.static(path.resolve(__dirname, './public/')));
 
 function preCompile(template, locale, view) {
   var compiled, content;
@@ -146,9 +141,25 @@ function renderPage(req, res) {
   res.send(page);
 }
 
+// initialize express app
+var app = express();
 app
+  .use(express.compress())
+  .use(express.logger())
+  .use(locale(i18n.supported))
+  .use(express.static(path.resolve(__dirname, './public/')))
   .get('/', renderPage)
   .get('/:title', renderPage);
 
-app.listen(config.port);
-console.log('app listening on port %s', config.port);
+http.createServer(app).listen(config.port.http);
+console.log('app listening on port %s', config.port.http);
+
+// dev only
+if (config.env === 'dev') {
+  var options = {
+    key: fs.readFileSync(path.join(__dirname, 'server-key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, 'server-cert.pem'))
+  };
+  https.createServer(options, app).listen(config.port.https);
+  console.log('app listening on port %s', config.port.https);
+}
