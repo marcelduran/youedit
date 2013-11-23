@@ -18,7 +18,7 @@ define([
 
     this.setVideo = function(ev, data) {
       video = data.video;
-      $node.css('background-image', 'url(http://i' + video.shard +
+      $node.css('background-image', 'url(//i' + video.shard +
         '.ytimg.com/vi/' + video.id + '/default.jpg)');
       $node.slider('option', 'max', video.duration);
       $node.slider('option', 'values', [0, video.duration]);

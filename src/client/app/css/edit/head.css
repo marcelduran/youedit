@@ -19,11 +19,11 @@
   float: left;
 }
 #preview {
-  font-size: 20px;
+  font-size: 24px;
   width: 120px;
-  height: 42px;
-  border: none;
   background: #999;
   color: #fff;
   float: right;
+  text-align: center;
+  padding: 9px 0;
 }

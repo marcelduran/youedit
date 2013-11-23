@@ -14,7 +14,7 @@ define(['flight/lib/component'], function(component) {
 
     this.searchVideos = function() {
       $.ajax({
-        url: 'http://gdata.youtube.com/feeds/api/videos',
+        url: '//gdata.youtube.com/feeds/api/videos',
         dataType: 'jsonp',
         timeout: 10000,
         data: {

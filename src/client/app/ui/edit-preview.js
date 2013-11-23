@@ -9,7 +9,8 @@ define(['flight/lib/component'], function(component) {
       require(['watch'], function(watch) {
         $('body').removeClass('edit').addClass('watch');
         watch.initialize();
-      });
+        this.trigger('startPreview');
+      }.bind(this));
     };
   
     this.after('initialize', function() {

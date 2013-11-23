@@ -48,10 +48,7 @@ define([
       }.bind(this));
       this.$node.prepend(markup);
 
-      window.onYouTubeIframeAPIReady = function() {
-        this.next(this.managers.video);
-        this.next(this.managers.audio);
-      }.bind(this);
+      window.onYouTubeIframeAPIReady = this.start.bind(this);
     };
 
     this.onPlayerReady = function(mgr, index, ev) {
@@ -171,7 +168,7 @@ define([
       }
     };
 
-    this.start = function(ev, data) {
+    this.setData = function(ev, data) {
       // video/audio managers config object
       this.managers = {
         video: {
@@ -202,9 +199,15 @@ define([
       };
     };
 
+    this.start = function() {
+      this.next(this.managers.video);
+      this.next(this.managers.audio);
+    };
+
     this.after('initialize', function() {
       this.init();
-      this.on(document, 'metainfoParsed', this.start);
+      this.on(document, 'metainfoParsed', this.setData);
+      this.on(document, 'startPreview', this.start);
     });
   }
 

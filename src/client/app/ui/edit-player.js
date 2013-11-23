@@ -63,7 +63,7 @@ define(['flight/lib/component'], function(component) {
     };
 
     this.init = function() {
-      var markup = '<div class="' + this.attr.playerClass + '"/>';
+      var markup = '<div class="' + this.attr.playerClass + ' edit"/>';
 
       this.$node.prepend(markup);
 
