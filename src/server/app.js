@@ -151,11 +151,11 @@ app
   .get('/', renderPage)
   .get('/:title', renderPage);
 
-http.createServer(app).listen(process.env.PORT || config.port.http);
-console.log('app listening on port %s', process.env.PORT || config.port.http);
+http.createServer(app).listen(config.port.http);
+console.log('app listening on port %s', config.port.http);
 
 // dev only
-if (process.env.NODE_ENV === 'dev') {
+if (config.env === 'dev') {
   var options = {
     key: fs.readFileSync(path.join(__dirname, 'server-key.pem')),
     cert: fs.readFileSync(path.join(__dirname, 'server-cert.pem'))
