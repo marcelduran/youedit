@@ -28,5 +28,9 @@
   "scripts": {
     "postinstall": "node_modules/bower/bin/bower install; node_modules/jqueryui-amd/jqueryui-amd.js bower_components/jquery-ui",
     "start": "node app.js"
+  },
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.3.x"
   }
 }
