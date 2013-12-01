@@ -128,6 +128,9 @@ module.exports = function(grunt) {
       build: {
         options: {
           file: 'build/app.js',
+          env: {
+            NODE_ENV: 'dev',
+          },
           watchedExtensions: ['js', 'mustache', 'css', 'json']
         }
       }
