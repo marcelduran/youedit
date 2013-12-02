@@ -71,6 +71,12 @@ define([
     this.onPlayerStateChange = function(mgr, ev) {
       var player, duration;
 
+      // playback start event, only once
+      if (!this.playbackStarted && ev.data === YT.PlayerState.PLAYING) {
+        this.playbackStarted = true;
+        this.trigger('playbackStarted');
+      }
+
       player = ev.target;
       duration = player.getDuration();
 

@@ -9,9 +9,13 @@ define(['flight/lib/component'], function(component) {
       url: '//youedit.disqus.com/embed.js'
     });
 
-    this.after('initialize', function() {
+    this.init = function() {
       window.disqus_shortname = this.attr.shortname;
       $.getScript(this.attr.url);
+    };
+
+    this.after('initialize', function() {
+      this.on(document, 'playbackStarted', this.init);
     });
 
   }
