@@ -1,5 +1,4 @@
 {
-  "env": "dev",
   "port": {
     "http": 8000,
     "https": 8001
