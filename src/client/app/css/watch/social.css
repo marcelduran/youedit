@@ -9,7 +9,7 @@
   display: inline-block;
   float: left;
 }
-#social li {
+#social #facebook {
   margin-right: 20px;
 }
 #social li.icon-link {

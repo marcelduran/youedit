@@ -4,13 +4,15 @@ define([
 
   'data/meta',
   'ui/player',
-  'ui/comments'
+  'ui/comments',
+  'ui/social'
 
 ], function(
 
   metaData,
   playerUI,
-  commentsUI
+  commentsUI,
+  socialUI
 
 ) {
 
@@ -18,6 +20,7 @@ define([
     playerUI.attachTo('#video');
     metaData.attachTo(document);
     commentsUI.attachTo('#comments');
+    socialUI.attachTo('#social');
   }
 
   return {

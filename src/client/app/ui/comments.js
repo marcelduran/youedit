@@ -23,4 +23,3 @@ define(['flight/lib/component'], function(component) {
   return component(comments);
 
 });
-
