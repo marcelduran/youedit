@@ -34,7 +34,11 @@ define([
     this.init = function() {
       var markup = '';
 
-      $.getScript(this.attr.playerURL);
+      $.ajax({
+        url: this.attr.playerURL,
+        dataType: 'script',
+        cache: true
+      });
 
       ['video', 'audio'].forEach(function(type) {
         var i = this.attr.bufferLength[type];

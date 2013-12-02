@@ -11,7 +11,11 @@ define(['flight/lib/component'], function(component) {
 
     this.init = function() {
       window.disqus_shortname = this.attr.shortname;
-      $.getScript(this.attr.url);
+      $.ajax({
+        url: this.attr.url,
+        dataType: 'script',
+        cache: true
+      });
     };
 
     this.after('initialize', function() {
