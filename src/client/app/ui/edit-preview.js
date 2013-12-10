@@ -4,12 +4,35 @@ define(['flight/lib/component'], function(component) {
 
   function preview() {
 
+    this.defaultAttrs({
+      bodySelector: 'body',
+      videoSelector: '#video',
+      editClass: 'edit',
+      watchClass: 'watch',
+      hasPlayerClass: 'has-player'
+    });
+
+    this.togglePreview = function() {
+      $(this.attr.bodySelector)
+        .removeClass(this.attr.editClass)
+        .addClass(this.attr.watchClass);
+      $(this.attr.videoSelector)
+        .removeClass(this.attr.hasPlayerClass);
+
+      this.trigger('startPreview');
+    };
+
     this.preview = function(ev) {
       ev.preventDefault();
+
+      if (this.watchLoaded) {
+        return this.togglePreview();
+      }
+
       require(['watch'], function(watch) {
-        $('body').removeClass('edit').addClass('watch');
         watch.initialize();
-        this.trigger('startPreview');
+        this.watchLoaded = true;
+        this.togglePreview();
       }.bind(this));
     };
   
