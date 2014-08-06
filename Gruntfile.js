@@ -89,12 +89,6 @@ module.exports = function(grunt) {
             dest: 'build/public/js/jqueryui',
             expand: true,
             cwd: 'bower_components/jquery-ui/jqueryui/'
-          },
-          {
-            src: 'swfobject.js',
-            dest: 'build/public/js/swfobject',
-            expand: true,
-            cwd: 'bower_components/swfobject-umd/swfobject/src/'
           }
         ]
       }
